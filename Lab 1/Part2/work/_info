@@ -1,0 +1,67 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/icook/Documents/Repo/Lab 1/Part2
+T_opt
+!s110 1642800891
+VEFXPC4QoEWS@W8N<=5NYD2
+04 8 4 work stimulus fast 0
+=1-b07b252c50e0-61eb26fa-394-3c30
+o-quiet -auto_acc_if_foreign -work work +acc
+Z1 tCvgOpt 0
+n@_opt
+OL;O;10.7f;67
+vregfile
+Z2 DXx6 sv_std 3 std 0 22 d=_JfHTnXCN[H5FjiaJJc0
+Z3 !s110 1642800890
+!i10b 1
+!s100 MES]7^zfNZRLZkUFgPeFA1
+I=TC?jHL^=bebM`F6VAAEY3
+Z4 VDg1SIo80bB@j0V0VzS_@n1
+!s105 regfile_sv_unit
+S1
+R0
+w1642800176
+8regfile.sv
+Fregfile.sv
+L0 1
+Z5 OL;L;10.7f;67
+r1
+!s85 0
+31
+Z6 !s108 1642800890.000000
+Z7 !s107 regfile_tb.sv|regfile.sv|
+Z8 !s90 -reportprogress|300|regfile.sv|regfile_tb.sv|
+!i113 0
+Z9 o-L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R1
+vstimulus
+R2
+R3
+!i10b 1
+!s100 B^hWWb6`6Gm3fJ5^HIJOW0
+I?Wod=Omb_DFSEa`JFK`gl1
+R4
+!s105 regfile_tb_sv_unit
+S1
+R0
+w1642800882
+8regfile_tb.sv
+Fregfile_tb.sv
+L0 1
+R5
+r1
+!s85 0
+31
+R6
+R7
+R8
+!i113 0
+R9
+R1
