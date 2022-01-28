@@ -39,6 +39,12 @@ module stimulus();
 		#5 	wa3 = ra2; 		// set write to addr 0_10 
 		#10 we3 = 1'b0; 								// set enable low
 		#15 ra1 = 1'b0; 	//READ ZERO BLOCK
+		#20 wd3 = 32'b101;
+		#20 wa3 = 1'b11;
+		#20 ra1 = wa3;
+		#20 ra2 = wa3;
+		#20 we3 = 1'b1;
+		
 	end
 		
 

@@ -9,17 +9,17 @@ z2
 cModel Technology
 Z0 dC:/Users/icook/Documents/Repo/Lab 1/Part2
 T_opt
-!s110 1642800891
-VEFXPC4QoEWS@W8N<=5NYD2
+!s110 1643408875
+V=T`M2zeJJcDZEPJJj2O;00
 04 8 4 work stimulus fast 0
-=1-b07b252c50e0-61eb26fa-394-3c30
+=1-b07b252c50e0-61f46deb-88-39bc
 o-quiet -auto_acc_if_foreign -work work +acc
 Z1 tCvgOpt 0
 n@_opt
 OL;O;10.7f;67
 vregfile
 Z2 DXx6 sv_std 3 std 0 22 d=_JfHTnXCN[H5FjiaJJc0
-Z3 !s110 1642800890
+Z3 !s110 1643408874
 !i10b 1
 !s100 MES]7^zfNZRLZkUFgPeFA1
 I=TC?jHL^=bebM`F6VAAEY3
@@ -35,7 +35,7 @@ Z5 OL;L;10.7f;67
 r1
 !s85 0
 31
-Z6 !s108 1642800890.000000
+Z6 !s108 1643408874.000000
 Z7 !s107 regfile_tb.sv|regfile.sv|
 Z8 !s90 -reportprogress|300|regfile.sv|regfile_tb.sv|
 !i113 0
@@ -45,13 +45,13 @@ vstimulus
 R2
 R3
 !i10b 1
-!s100 B^hWWb6`6Gm3fJ5^HIJOW0
-I?Wod=Omb_DFSEa`JFK`gl1
+!s100 Rn_kSYWGVnR5ofO>`d>4a3
+Io[Nd@AWo<M3fo=>;>9LbK1
 R4
 !s105 regfile_tb_sv_unit
 S1
 R0
-w1642800882
+w1643408719
 8regfile_tb.sv
 Fregfile_tb.sv
 L0 1
