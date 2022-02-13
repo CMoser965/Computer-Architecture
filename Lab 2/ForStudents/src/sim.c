@@ -240,18 +240,16 @@ int branch_process(char* i_) {
   d_cond[2] = i_[2];
   d_cond[3] = i_[3];
   d_cond[4] = '\0';
-  char L[3];
-  L[0] = i_[6];
-  L[1] = i_[7];
-  L[2] = '\0';
+  int L;
+  L = i_[7] - '0';
   char imm24[25];
   imm24[24] = '\0';
   for(int i = 0; i < 24; i++) {
     imm24[i] = i_[8+i];
   }
   int IM = bchar_to_int(imm24);
-  printf("Opcode = %s\n 1L = %s\n imm24 = %s\n", )
-  if(!strcmp(L, "10")) {
+  printf("Cond = %s\n 1L = 1%d\n imm24 = %s\n", d_cond, L, imm24);
+  if(!L) {
     printf("--- This is a Branch instruction. \n");
     B(IM);
   }
@@ -259,9 +257,7 @@ int branch_process(char* i_) {
     printf("--- This is a Branch with Link Instruction. \n");
     BL(IM);
   }
-
   return 1;
-
 }
 
 int mul_process(char* i_) {
@@ -291,21 +287,81 @@ int mul_process(char* i_) {
     Rm[i] = i_[20+i];
     Rn[i] = i_[28+i];
   }
-
+  printf("opcode = %s\n condition = %s\n Rd = %s\n Ra = %s\n Rm = %s\n Rn = %s\n", d_opcode, d_cond, Rd, Ra, Rm, Rn);
   /* function passes */
-  
-
-
+  if(!strcmp(d_opcode, "000")) {
+    printf("--- This is a MUL instruction. \n");
+    MUL(Rd, Rn, Rm);
+    return 0;
+  } else if(!strcmp(d_opcode, "001")) {
+    printf("--- This is an MLA instruction. \n");
+    MLA(Rd, Rn, Rm, Ra);
+    return 0;
+  } else if(!strcmp(d_opcode, "100")){
+    printf("--- This is a UMULL instruction. \n");
+    UMULL(Rd, Rn, Rm, Ra);
+    return 0;
+  } else if(!strcmp(d_opcode, "101")){
+    printf("--- This is a UMLAL instruction. \n");
+    UMLAL(Rd, Rn, Rm, Ra);
+    return 0;
+  } else if(!strcmp(d_opcode, "110")){
+    SMULL(Rd, Rn, Rm, Ra);
+    return 0;
+  } else if(!strcmp(d_opcode, "111")){
+    SMLAL(Rd, Rn, Rm, Ra);
+    return 0;
+  }
   return 1;
-
 }
 
 int transfer_process(char* i_) {
 
   /* This function execute memory instruction */
-
+  char d_cond[5];
+  d_cond[0] = i_[0];
+  d_cond[1] = i_[1];
+  d_cond[2] = i_[2];
+  d_cond[3] = i_[3];
+  d_cond[4] = '\0';
+  int I, P, U, B, W, L;
+  I = i_[6] - '0'; P = i_[7] - '0';
+  U = i_[8] - '0'; B = i_[9] - '0';
+  W = i_[10] - '0'; L = i_[11] - '0';
+  char rn[5]; char rd[5];
+  rn[4] = '\0'; rd[4] = '\0';
+  for(int i = 0; i < 4; i++) {
+    rn[i] = i_[12+i]; rd[i] = i_[16+i];
+  }
+  char src2[13];
+  src2[12] = '\0';
+  for(int i = 0; i < 12; i++) {
+    src2[i] = i_[20+i];
+  }
+  char shamt5[6]; char sh[3]; char rm[5];
+  print("I = %d\n", I);
+  if(I) {
+    shamt5[5] = '\0'; sh[2] = '\0'; rm[4] = '\0';
+    for(int i = 0; i < 6; i++) {
+      if(i<2) 
+        sh[i] = src2[i+5];
+      if(i<4)
+        rm[i] = src2[i+8];
+      shamt5[i] = src2[i];
+    }
+    print("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
+  } else {
+    print("imm12 = %s\n", src2);
+  }
   /* Add memory instructions here */ 
-
+  if(!B && !L)
+    STR(rd, rn, src2);
+  else if(!B && L)
+    LDR(rd, rn, src2);
+  else if(B && !L)
+    STRB(rd, rn, src2);
+  else if(B && L)
+    LDRB(rd, rn, src2);
   return 1;
 
 }
