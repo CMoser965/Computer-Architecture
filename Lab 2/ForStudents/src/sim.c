@@ -124,6 +124,20 @@ int data_process(char* i_) {
   int CC = bchar_to_int(d_cond);
   printf("Opcode = %s\n Rn = %d\n Rd = %d\n Operand2 = %s\n I = %d\n S = %d\n COND = %s\n", d_opcode, Rn, Rd, byte_to_binary12(Operand2), I, S, byte_to_binary4(CC));
   printf("\n");
+  
+  // use for LSL and LSR case
+  char shamt5[6]; char sh[3]; char rm[5];
+  if(I) {
+    shamt5[5] = '\0'; sh[2] = '\0'; rm[4] = '\0';
+    for(int i = 0; i < 6; i++) {
+      if(i<2) 
+        sh[i] = operand2[i+5];
+      if(i<4)
+        rm[i] = operand2[i+8];
+      shamt5[i] = operand2[i];
+    }
+    print("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
+  }
 
   /* Example - use and replicate */
   if(!strcmp(d_opcode,"0100")) {
@@ -206,12 +220,15 @@ int data_process(char* i_) {
   }
 
   else if(!strcmp(d_opcode, "1101")) {
-    if(bchar_to_int(I)) {
+    if(I) { // MOV case
       printf("--- This is an MOV instruction. \n");
       MOV(Rd, Rn, Operand2, I, S, CC);
       return 0;
+    } else if(!strcmp(sh, "00")) { // LSL case
+      LSL(Rd, rm, shamt5);
+    } else if(!strcmp(sh, "01")) {
+      LSR(Rd, rm, shamt5);
     }
-    
   }
 
   else if(!strcmp(d_opcode, "1110")) {
