@@ -121,7 +121,9 @@ int AND (int Rd, int Rn, int Operand2, int I, int S, int CC){
     if (setOverflow(a, b, cur)){
       NEXT_STATE.CPSR |= V_N;
     }
-    //add Carry Flag
+    if (cur > 0x11111111){
+      NEXT_STATE.CPSR |= C_N;
+    }
   }	
   return 0;
 }
@@ -220,6 +222,8 @@ int ADD (int Rd, int Rn, int Operand2, int I, int S, int CC) {
 
 int ADC (int Rd, int Rn, int Operand2, int I, int S, int CC){
   int cur = 0;
+  int a = 0;
+  int b = 0;
   if(I == 0) {
     int sh = (Operand2 & 0x00000060) >> 5;
     int shamt5 = (Operand2 & 0x00000F80) >> 7;
@@ -228,41 +232,57 @@ int ADC (int Rd, int Rn, int Operand2, int I, int S, int CC){
     int Rs = (Operand2 & 0x00000F00) >> 8;
     if (bit4 == 0) 
       switch (sh) {
-      case 0: cur = CURRENT_STATE.REGS[Rn] + 
-	  (CURRENT_STATE.REGS[Rm] << shamt5);
-	  break;
-      case 1: cur = CURRENT_STATE.REGS[Rn] + 
-	  (CURRENT_STATE.REGS[Rm] >> shamt5);
-	  break;
-      case 2: cur = CURRENT_STATE.REGS[Rn] + 
-	  (CURRENT_STATE.REGS[Rm] >> shamt5);
+      case 0:
+        a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] << shamt5;
+        cur = a + b + C_CUR;
+	      break;
+      case 1:
+        a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> shamt5;
+        cur = a + b + C_CUR;
+	      break;
+      case 2: 
+        a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> shamt5;
+        cur = a + b + C_CUR;
     	  break;
-      case 3: cur = CURRENT_STATE.REGS[Rn] + 
-	      ((CURRENT_STATE.REGS[Rm] >> shamt5) |
-               (CURRENT_STATE.REGS[Rm] << (32 - shamt5)));
-	  break;
+      case 3:
+	      a = CURRENT_STATE.REGS[Rn];
+        b = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
+        cur = a + b + C_CUR;
+    	  break;
       }     
     else
       switch (sh) {
-      case 0: cur = CURRENT_STATE.REGS[Rn] + 
-	  (CURRENT_STATE.REGS[Rm] << CURRENT_STATE.REGS[Rs]);
-	  break;
-      case 1: cur = CURRENT_STATE.REGS[Rn] + 
-	  (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
-	  break;
-      case 2: cur = CURRENT_STATE.REGS[Rn] + 
-	  (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
-	  break;
-      case 3: cur = CURRENT_STATE.REGS[Rn] + 
-	      ((CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]) |
-               (CURRENT_STATE.REGS[Rm] << (32 - CURRENT_STATE.REGS[Rs])));
-	  break;
+      case 0:
+	      a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] << CURRENT_STATE.REGS[Rs];
+        cur = a + b + C_CUR;
+    	  break;
+      case 1:
+	      a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
+        cur = a + b + C_CUR;
+    	  break;
+      case 2: cur = CURRENT_STATE.REGS[Rn] + (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
+	      a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
+        cur = a + b + C_CUR;
+    	  break;
+      case 3: 
+        a = CURRENT_STATE.REGS[Rn];
+        b = (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]) | (CURRENT_STATE.REGS[Rm] << (32 - CURRENT_STATE.REGS[Rs]));
+        cur = a + b + C_CUR;
+    	  break;
       }      
   }
   if (I == 1) {
     int rotate = Operand2 >> 8;
     int Imm = Operand2 & 0x000000FF;
-    cur = CURRENT_STATE.REGS[Rn] + (Imm>>2*rotate|(Imm<<(32-2*rotate)));
+    a = CURRENT_STATE.REGS[Rn];
+    b = Imm>>2*rotate|(Imm<<(32-2*rotate));
+    cur = a + b + C_CUR;
   }
   NEXT_STATE.REGS[Rd] = cur;
   if (S == 1) {
@@ -270,10 +290,13 @@ int ADC (int Rd, int Rn, int Operand2, int I, int S, int CC){
       NEXT_STATE.CPSR |= N_N;
     if (cur == 0)
       NEXT_STATE.CPSR |= Z_N;
-    if (cur >= 0x100000000)
+    if (setOverflow(a,b,cur))
+      NEXT_STATE.CPSR |= V_N;
+    if (cur > 0x11111111)
       NEXT_STATE.CPSR |= C_N;
   }	
   return 0;
+
 }
 
 int SBC (int Rd, int Rn, int Operand2, int I, int S, int CC){
