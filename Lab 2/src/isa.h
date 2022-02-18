@@ -39,6 +39,9 @@
 int AND (int Rd, int Rn, int Operand2, int I, int S, int CC){
   // Rd <- Rn & Src2(which is Operand2)
   int cur = 0;
+  int a = 0;
+  int b = 0;
+
   if(I == 0){ //Register or Register-Shifted Register
     int shamt5 = (Operand2 & 0x00000F80) >> 7; // shift amount (5 bit unsighed integer)
     int sh = (Operand2 & 0x00000060) >> 5;
@@ -47,47 +50,64 @@ int AND (int Rd, int Rn, int Operand2, int I, int S, int CC){
         01 -> (1) -> logical right
         10 -> (2) -> arithmetic right
         11 -> (3) -> rotate right
-
       */
     int Rm = Operand2 & 0x0000000F;
     int Rs = (Operand2 & 0x00000F00) >> 8;
     int bit4 = (Operand2 & 0x00000010) >> 4;  
 
-    if (bit4 == 0) { //0: Register-Shifted Register (immediate shift value)
+    if (bit4 == 0) 
       switch (sh) {
-        case 0: //logical left shift
-          cur = CURRENT_STATE.REGS[Rn] & (CURRENT_STATE.REGS[Rm] << shamt5);
-          break;
-        case 1: //logical right shift
-          cur = CURRENT_STATE.REGS[Rn] & (CURRENT_STATE.REGS[Rm] >> shamt5);
-          break;
-        case 2: //arithmetic right shift
-          cur = CURRENT_STATE.REGS[Rn] & (CURRENT_STATE.REGS[Rm] >> shamt5);
-          break;
-        case 3: //rotate right shift
-          cur = CURRENT_STATE.REGS[Rn] & ((CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5)));
-          break;
-      }
-    } else { //1: Register
-      switch (sh) {
-        case 0: //logical left shift
-          cur = CURRENT_STATE.REGS[Rn] & (CURRENT_STATE.REGS[Rm] << CURRENT_STATE.REGS[Rs]);
-          break;
-        case 1: //logical right shift
-          cur = CURRENT_STATE.REGS[Rn] & (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
-          break;
-        case 2: //arithmetic right shift
-          cur = CURRENT_STATE.REGS[Rn] & (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
-          break;
-        case 3: //rotate right shift
-          cur = CURRENT_STATE.REGS[Rn] & ((CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]) | (CURRENT_STATE.REGS[Rm] << (32 - CURRENT_STATE.REGS[Rs])));
-          break;
+      case 0:
+        a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] << shamt5;
+        cur = a & b;
+	      break;
+      case 1:
+        a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> shamt5;
+        cur = a & b;
+	      break;
+      case 2: 
+        a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> shamt5;
+        cur = a & b;
+    	  break;
+      case 3:
+	      a = CURRENT_STATE.REGS[Rn];
+        b = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
+        cur = a & b;
+    	  break;
       }     
-    }
-  } else if (I == 1){  //Immediate
+    else
+      switch (sh) {
+      case 0:
+	      a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] << CURRENT_STATE.REGS[Rs];
+        cur = a & b;
+    	  break;
+      case 1:
+	      a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
+        cur = a & b;
+    	  break;
+      case 2: cur = CURRENT_STATE.REGS[Rn] + (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
+	      a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
+        cur = a & b;
+    	  break;
+      case 3: 
+        a = CURRENT_STATE.REGS[Rn];
+        b = (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]) | (CURRENT_STATE.REGS[Rm] << (32 - CURRENT_STATE.REGS[Rs]));
+        cur = a & b;
+    	  break;
+      }      
+  }
+  if (I == 1) {
     int rotate = Operand2 >> 8;
     int Imm = Operand2 & 0x000000FF;
-    cur = CURRENT_STATE.REGS[Rn] & (Imm>>2*rotate|(Imm<<(32-2*rotate)));
+    a = CURRENT_STATE.REGS[Rn];
+    b = Imm>>2*rotate|(Imm<<(32-2*rotate));
+    cur = a & b;
   }
 
   NEXT_STATE.REGS[Rd] = cur;
@@ -98,6 +118,10 @@ int AND (int Rd, int Rn, int Operand2, int I, int S, int CC){
     if (cur == 0) {
       NEXT_STATE.CPSR |= Z_N;
     }
+    if (setOverflow(a, b, cur)){
+      NEXT_STATE.CPSR |= V_N;
+    }
+    //add Carry Flag
   }	
   return 0;
 }
@@ -117,6 +141,8 @@ int RSB (int Rd, int Rn, int Operand2, int I, int S, int CC){
 int ADD (int Rd, int Rn, int Operand2, int I, int S, int CC) {
 
   int cur = 0;
+  int a = 0;
+  int b = 0;
   if(I == 0) {
     int sh = (Operand2 & 0x00000060) >> 5;
     int shamt5 = (Operand2 & 0x00000F80) >> 7;
@@ -125,41 +151,57 @@ int ADD (int Rd, int Rn, int Operand2, int I, int S, int CC) {
     int Rs = (Operand2 & 0x00000F00) >> 8;
     if (bit4 == 0) 
       switch (sh) {
-      case 0: cur = CURRENT_STATE.REGS[Rn] + 
-	  (CURRENT_STATE.REGS[Rm] << shamt5);
-	  break;
-      case 1: cur = CURRENT_STATE.REGS[Rn] + 
-	  (CURRENT_STATE.REGS[Rm] >> shamt5);
-	  break;
-      case 2: cur = CURRENT_STATE.REGS[Rn] + 
-	  (CURRENT_STATE.REGS[Rm] >> shamt5);
+      case 0:
+        a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] << shamt5;
+        cur = a + b;
+	      break;
+      case 1:
+        a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> shamt5;
+        cur = a + b;
+	      break;
+      case 2: 
+        a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> shamt5;
+        cur = a + b;
     	  break;
-      case 3: cur = CURRENT_STATE.REGS[Rn] + 
-	      ((CURRENT_STATE.REGS[Rm] >> shamt5) |
-               (CURRENT_STATE.REGS[Rm] << (32 - shamt5)));
-	  break;
+      case 3:
+	      a = CURRENT_STATE.REGS[Rn];
+        b = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
+        cur = a + b;
+    	  break;
       }     
     else
       switch (sh) {
-      case 0: cur = CURRENT_STATE.REGS[Rn] + 
-	  (CURRENT_STATE.REGS[Rm] << CURRENT_STATE.REGS[Rs]);
-	  break;
-      case 1: cur = CURRENT_STATE.REGS[Rn] + 
-	  (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
-	  break;
-      case 2: cur = CURRENT_STATE.REGS[Rn] + 
-	  (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
-	  break;
-      case 3: cur = CURRENT_STATE.REGS[Rn] + 
-	      ((CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]) |
-               (CURRENT_STATE.REGS[Rm] << (32 - CURRENT_STATE.REGS[Rs])));
-	  break;
+      case 0:
+	      a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] << CURRENT_STATE.REGS[Rs];
+        cur = a + b;
+    	  break;
+      case 1:
+	      a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
+        cur = a + b;
+    	  break;
+      case 2: cur = CURRENT_STATE.REGS[Rn] + (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
+	      a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
+        cur = a + b;
+    	  break;
+      case 3: 
+        a = CURRENT_STATE.REGS[Rn];
+        b = (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]) | (CURRENT_STATE.REGS[Rm] << (32 - CURRENT_STATE.REGS[Rs]));
+        cur = a + b;
+    	  break;
       }      
   }
   if (I == 1) {
     int rotate = Operand2 >> 8;
     int Imm = Operand2 & 0x000000FF;
-    cur = CURRENT_STATE.REGS[Rn] + (Imm>>2*rotate|(Imm<<(32-2*rotate)));
+    a = CURRENT_STATE.REGS[Rn];
+    b = Imm>>2*rotate|(Imm<<(32-2*rotate));
+    cur = a + b;
   }
   NEXT_STATE.REGS[Rd] = cur;
   if (S == 1) {
@@ -167,6 +209,8 @@ int ADD (int Rd, int Rn, int Operand2, int I, int S, int CC) {
       NEXT_STATE.CPSR |= N_N;
     if (cur == 0)
       NEXT_STATE.CPSR |= Z_N;
+    if (setOverflow(a,b,cur))
+      NEXT_STATE.CPSR |= V_N;
   }	
   return 0;
 
@@ -321,6 +365,33 @@ int LDRSH (int Rd, int Rn, int Operand2, int I, int S, int CC){
  * 
  */
 int SWI (int Rd, int Rn, int Operand2, int I, int S, int CC){
+  return 0;
+}
+
+
+/**
+ * 
+ * Extra Functions:
+ * 
+ */ 
+
+/*
+  Overflow affects: 
+    Add:        ADDS  ADCS  
+    Substract:  SUBS  SBCS  RSBS
+    Compare:    CMP   CMN
+    Shifts:     ASRS  LSLS  LSRS  RORS  RRXS
+    Logical:    ANDS  ORRS  EORS  BICS
+    Test:       TEQ   TST
+    Move:       MOVS  MVNS
+    Multiply:   MULS  MLAS  SMLALS  SMULLS  UMLALS  UMULLS
+*/
+int setOverflow (int a, int b, int c){
+  //0xXXXX_XXXX 
+  int MSB = 0x10000000;
+  if ( ( (a & MSB) & (b & MSB) & !(c & MSB) ) || ( !(a & MSB) & !(b & MSB) & (c & MSB) ) ) {
+    return 1;
+  }
   return 0;
 }
 
