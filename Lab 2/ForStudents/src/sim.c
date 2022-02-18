@@ -334,7 +334,7 @@ int mul_process(char* i_) {
 
 int transfer_process(char* i_) {
 
-  /* This function execute memory instruction */
+  /* This function execute memory instruction */ 
   char d_cond[5];
   d_cond[0] = i_[0];
   d_cond[1] = i_[1];
