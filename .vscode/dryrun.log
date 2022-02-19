@@ -1,4 +1,4 @@
-make --dry-run --keep-going --print-directory
+make --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/mnt/c/Users/mathm/OneDrive/Documents/Spring2022/ECEN4243_comp_arch/Computer-Architecture'
 make: Leaving directory '/mnt/c/Users/mathm/OneDrive/Documents/Spring2022/ECEN4243_comp_arch/Computer-Architecture'
  

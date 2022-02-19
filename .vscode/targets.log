@@ -1,6 +1,4 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
-make: *** No rule to make target 'all'.  Stop.
- 
 # GNU Make 4.2.1
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
@@ -8,7 +6,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sun Feb 13 08:53:49 2022
+# Make data base, printed on Fri Feb 18 16:57:40 2022
 
 # Variables
 
@@ -17,7 +15,7 @@ make: *** No rule to make target 'all'.  Stop.
 # automatic
 ?F = $(notdir $?)
 # environment
-WSLENV = VSCODE_WSL_EXT_LOCATION/up:VSCODE_SERVER_TAR/up
+WSLENV = VSCODE_WSL_EXT_LOCATION/up
 # default
 .SHELLFLAGS := -c
 # environment
@@ -35,7 +33,7 @@ SHELL = /bin/sh
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
 # environment
-_ = /home/chmoser/.vscode-server/bin/d6ee99e4c045a6716e5c653d7da8e9ae6f5a8b03/node
+_ = /home/chmoser/.vscode-server/bin/f80445acd5a3dadef24aa209168452a3d97cc326/node
 # makefile
 MAKEFILE_LIST := 
 # 'override' directive
@@ -51,13 +49,11 @@ VSCODE_CWD = /mnt/c/Users/mathm/AppData/Local/Programs/Microsoft VS Code
 # default
 MAKE_HOST := x86_64-pc-linux-gnu
 # environment
-PATH = /home/chmoser/.vscode-server/bin/d6ee99e4c045a6716e5c653d7da8e9ae6f5a8b03/bin/remote-cli:/home/chmoser/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/mnt/c/Program Files/Eclipse Foundation/jdk-8.0.302.8-hotspot/bin:/mnt/c/Program Files/Oculus/Support/oculus-runtime:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Program Files/AdoptOpenJDK/jdk-11.0.10.9-hotspot/bin:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/Microsoft SQL Server/130/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/170/Tools/Binn/:/mnt/c/Program Files/Java/jdk1.8.0_281/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/MiKTeX/miktex/bin/x64/:/mnt/c/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn/:/mnt/c/Program Files (x86)/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/DTS/Binn/:/mnt/c/Program Files (x86)/Windows Kits/8.1/Windows Performance Toolkit/:/mnt/c/msys64:/mnt/c/Program Files (x86)/mingw-w64/i686-8.1.0-posix-dwarf-rt_v6-rev0/mingw32/bin:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/d/Program Files/MATLAB/R2021a/runtime/win64:/mnt/d/Program Files/MATLAB/R2021a/bin:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/dotnet/:/mnt/c/Users/mathm/AppData/Local/activestate/cache/bin:/mnt/c/Users/mathm/AppData/Local/ActiveState/StateTool/release:/mnt/c/Ruby27-x64/bin:/mnt/c/Users/mathm/AppData/Local/Programs/Python/Python39/:/mnt/c/Users/mathm/AppData/Local/Programs/Python/Python39/Scripts/:/mnt/c/Users/mathm/AppData/Local/Microsoft/WindowsApps:/mnt/c/Program Files (x86)/Nmap:/mnt/c/Users/mathm/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/chromedriver_win32:/mnt/c/cygwin64/bin:/mnt/c/Users/mathm/AppData/Local/GitHubDesktop/bin:/mnt/c/Users/mathm/.dotnet/tools:/snap/bin:/home/chmoser/.dotnet/tools
+PATH = /home/chmoser/.vscode-server/bin/f80445acd5a3dadef24aa209168452a3d97cc326/bin/remote-cli:/home/chmoser/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/mnt/c/Program Files/Eclipse Foundation/jdk-8.0.302.8-hotspot/bin:/mnt/c/Program Files/Oculus/Support/oculus-runtime:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Program Files/AdoptOpenJDK/jdk-11.0.10.9-hotspot/bin:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/Microsoft SQL Server/130/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/170/Tools/Binn/:/mnt/c/Program Files/Java/jdk1.8.0_281/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/MiKTeX/miktex/bin/x64/:/mnt/c/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/:/mnt/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn/:/mnt/c/Program Files (x86)/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/Tools/Binn/:/mnt/c/Program Files/Microsoft SQL Server/120/DTS/Binn/:/mnt/c/Program Files (x86)/Windows Kits/8.1/Windows Performance Toolkit/:/mnt/c/msys64:/mnt/c/Program Files (x86)/mingw-w64/i686-8.1.0-posix-dwarf-rt_v6-rev0/mingw32/bin:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/d/Program Files/MATLAB/R2021a/runtime/win64:/mnt/d/Program Files/MATLAB/R2021a/bin:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/dotnet/:/mnt/c/Users/mathm/AppData/Local/activestate/cache/bin:/mnt/c/Users/mathm/AppData/Local/ActiveState/StateTool/release:/mnt/c/Ruby27-x64/bin:/mnt/c/Users/mathm/AppData/Local/Programs/Python/Python39/:/mnt/c/Users/mathm/AppData/Local/Programs/Python/Python39/Scripts/:/mnt/c/Users/mathm/AppData/Local/Microsoft/WindowsApps:/mnt/c/Program Files (x86)/Nmap:/mnt/c/Users/mathm/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/chromedriver_win32:/mnt/c/cygwin64/bin:/mnt/c/Users/mathm/AppData/Local/GitHubDesktop/bin:/mnt/c/Users/mathm/.dotnet/tools:/snap/bin:/home/chmoser/.dotnet/tools
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-b2068cbb-593e-4829-a2ff-77cc6936a25d.sock
-# environment
-VSCODE_SERVER_TAR = /mnt/c/Users/mathm/AppData/Local/Temp/vscode-remote-wsl/d6ee99e4c045a6716e5c653d7da8e9ae6f5a8b03/vscode-server-stable-linux-x64.tar.gz
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-96e2e94d-1394-48c5-a1f6-1439792fe240.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -145,7 +141,7 @@ VSCODE_EXTHOST_WILL_SEND_SOCKET = true
 # environment
 WSL_DISTRO_NAME = Ubuntu
 # variable set hash-table stats:
-# Load=66/1024=6%, Rehash=0, Collisions=4/88=5%
+# Load=65/1024=6%, Rehash=0, Collisions=4/87=5%
 
 # Pattern-specific Variable Values
 
@@ -211,6 +207,8 @@ GNUmakefile:
 # strcache performance: lookups = 17 / hit rate = 17%
 # hash-table stats:
 # Load=14/8192=0%, Rehash=0, Collisions=1/17=6%
-# Finished Make data base on Sun Feb 13 08:53:49 2022
+# Finished Make data base on Fri Feb 18 16:57:40 2022
 
+ 
+make: *** No rule to make target 'all'.  Stop.
  
