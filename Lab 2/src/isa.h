@@ -1590,14 +1590,39 @@ int SMLAL (char* i_);
  */
 int STR (int Rd, int Rn, int Operand2, int I){
   int cur = 0;
-  if (I == 1){    //Immediate -> -I = 0
+  int address = 0;
+  int src2 = 0;
+  if (~I == 0){    //Immediate 
     //imm12 = Operand2
-    //Store Rd in value equal to [Rn, +- src2]
-
-  } else {        // Register -> -I = 1
-    // Store Rd in value equal to [Rn, +- src2]
+    // address is value equal to [Rn, +- src2]
+    //src2 = ...
+  } else {        // Register -> ~I = 1
+    // address iis value equal to [Rn, +- src2]
+    int shamt5 = (Operand2 & 0x00000F80) >> 7; 
+    int sh = (Operand2 & 0x00000060) >> 5;
+    int bit4 = (Operand2 & 0x00000010) >> 4; 
+    int Rm = Operand2 & 0x0000000F;
+    switch (sh) {
+      case 0: // LLS
+        src2 = CURRENT_STATE.REGS[Rm] << shamt5;
+	      break;
+      case 1: // LRS
+        src2 = CURRENT_STATE.REGS[Rm] >> shamt5;
+	      break;
+      case 2: // ARS
+        if (CURRENT_STATE.REGS[Rm] < 0 && shamt5 > 0) {
+          src2 = CURRENT_STATE.REGS[Rm] >> shamt5 | ~(~0U >> shamt5);
+        } else {
+          src2 = CURRENT_STATE.REGS[Rm] >> shamt5;
+        }
+    	  break;
+      case 3: // ROR
+        src2 = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
+    	  break;
+      }     
   }
-  NEXT_STATE.REGS[Rd] = cur;
+  address = CURRENT_STATE.REGS[Rn] + src2;
+  mem_write_32(address, Rd);
   return 0;
 }
 
