@@ -1224,10 +1224,12 @@ int ASR (int Rd, int Rn, int Operand2, int I, int S, int CC){
   return 0;
 }
 
+/*
 //1101 -> with MOV
 int RRX (int Rd, int Rn, int Operand2, int I, int S, int CC){
   return 0;
 }
+*/
 
 //1101 -> with MOV
 int ROR (int Rd, int Rn, int Operand2, int I, int S, int CC){
@@ -1459,6 +1461,7 @@ int BL (int Rd, int Rn, int Operand2, int I, int S, int CC){
  * MUL PROCESS
  * 
  */
+/*
 int MUL (char* i_);
 
 int MLA (char* i_);
@@ -1470,6 +1473,7 @@ int UMLAL (char* i_);
 int SMULL (char* i_);
 
 int SMLAL (char* i_);
+*/
 
 /**
  * 
@@ -1492,7 +1496,7 @@ int STRB (int Rd, int Rn, int Operand2, int I, int S, int CC){
 int LDRB (int Rd, int Rn, int Operand2, int I, int S, int CC){
   return 0;
 }
-
+/*
 int STRH (int Rd, int Rn, int Operand2, int I, int S, int CC){
   return 0;
 }
@@ -1508,6 +1512,7 @@ int LDRSB (int Rd, int Rn, int Operand2, int I, int S, int CC){
 int LDRSH (int Rd, int Rn, int Operand2, int I, int S, int CC){
   return 0;
 }
+*/
 
 
 /**
