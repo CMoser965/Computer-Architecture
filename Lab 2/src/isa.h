@@ -28,6 +28,33 @@
 #include <string.h>
 #include "shell.h"
 
+/**
+ * @brief Function call to return condition
+ * 
+ * @param CC 
+ * @return int 
+ */
+int check_cond(int CC) {
+  switch (CC) {
+    case 0: return Z_CUR;
+    case 1: return ~Z_CUR&1;
+    case 2: return C_CUR;
+    case 3: return ~C_CUR&1;
+    case 4: return N_CUR;
+    case 5: return ~N_CUR&1;
+    case 6: return V_CUR;
+    case 7: return ~V_CUR&1;
+    case 8: return C_CUR&(~Z_CUR);
+    case 9: return (~C_CUR&1)|Z_CUR;
+    case 10: return N_CUR == V_CUR;
+    case 11: return N_CUR != V_CUR; 
+    case 12: return (Z_CUR == 0) && (N_CUR == V_CUR);
+    case 13: return (Z_CUR ==1) || (N_CUR != V_CUR);
+    case 14:return 1;
+    case 15: return 1;
+    default: return -1;
+  }
+}
 
 /**
  * 
