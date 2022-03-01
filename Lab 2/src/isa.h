@@ -1911,22 +1911,31 @@ int SMLAL (char* i_);
 /**
  * 
  * TRANSFER PROCESS
+ * MEMORY INSTRUCTIONS
  * 
  */
-//memory: or transfer???
-int STR (int Rd, int Rn, int Operand2, int I, int S, int CC){
+int STR (int Rd, int Rn, int Operand2, int I){
+  int cur = 0;
+  if (I == 1){    //Immediate -> -I = 0
+    //imm12 = Operand2
+    //Store Rd in value equal to [Rn, +- src2]
+
+  } else {        // Register -> -I = 1
+    // Store Rd in value equal to [Rn, +- src2]
+  }
+  NEXT_STATE.REGS[Rd] = cur;
   return 0;
 }
 
-int LDR (int Rd, int Rn, int Operand2, int I, int S, int CC){
+int LDR (int Rd, int Rn, int Operand2, int I){
   return 0;
 }
 
-int STRB (int Rd, int Rn, int Operand2, int I, int S, int CC){
+int STRB (int Rd, int Rn, int Operand2, int I){
   return 0;
 }
 
-int LDRB (int Rd, int Rn, int Operand2, int I, int S, int CC){
+int LDRB (int Rd, int Rn, int Operand2, int I){
   return 0;
 }
 /*
@@ -1953,7 +1962,7 @@ int LDRSH (int Rd, int Rn, int Operand2, int I, int S, int CC){
  * INTERRUPTION PROCESS
  * 
  */
-int SWI (int Rd, int Rn, int Operand2, int I, int S, int CC){
+int SWI (){
   return 0;
 }
 
