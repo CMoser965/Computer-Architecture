@@ -1296,10 +1296,12 @@ int ASR (int Rd, int Rn, int Operand2, int I, int S, int CC){
   return 0;
 }
 
+/*
 //1101 -> with MOV
 int RRX (int Rd, int Rn, int Operand2, int I, int S, int CC){
   return 0;
 }
+*/
 
 //1101 -> with MOV
 int ROR (int Rd, int Rn, int Operand2, int I, int S, int CC){
@@ -1527,10 +1529,8 @@ int BL (int imm24){
  * MUL PROCESS
  * 
  */
-int MUL (int Rd, int Rn, int Rm) {
-  NEXT_STATE.REGS[Rd] = CURRENT_STATE.REGS[Rn] * CURRENT_STATE.REGS[Rm];
-  return 0;
-}
+/*
+int MUL (char* i_);
 
 int MLA (int Rd, int Rn, int Rm, int Ra) {
   NEXT_STATE.REGS[Rd] = (CURRENT_STATE.REGS[Rn] * CURRENT_STATE.REGS[Rm]) + CURRENT_STATE.REGS[Ra];
@@ -1552,10 +1552,8 @@ int SMULL (int Rd, int Rn, int Rm, int Ra) {
   return 0;
 }
 
-int SMLAL (int Rd, int Rn, int Rm, int Ra) {
-  NEXT_STATE.REGS[Rd + Ra]  = CURRENT_STATE.REGS[Rn] * CURRENT_STATE.REGS[Rm];
-  return 0;
-}
+int SMLAL (char* i_);
+*/
 
 /**
  * 
@@ -1578,7 +1576,7 @@ int STRB (int Rd, int Rn, int Operand2, int I, int S, int CC){
 int LDRB (int Rd, int Rn, int Operand2, int I, int S, int CC){
   return 0;
 }
-
+/*
 int STRH (int Rd, int Rn, int Operand2, int I, int S, int CC){
   return 0;
 }
@@ -1594,6 +1592,7 @@ int LDRSB (int Rd, int Rn, int Operand2, int I, int S, int CC){
 int LDRSH (int Rd, int Rn, int Operand2, int I, int S, int CC){
   return 0;
 }
+*/
 
 
 /**
