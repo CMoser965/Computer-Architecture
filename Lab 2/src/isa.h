@@ -98,10 +98,7 @@ int AND (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a & b;
     	  break;
       case 3: // ROR
@@ -126,10 +123,7 @@ int AND (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a & b;
     	  break;
       case 3: 
@@ -191,10 +185,7 @@ int EOR (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a ^ b;
     	  break;
       case 3:
@@ -219,10 +210,7 @@ int EOR (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a ^ b;
     	  break;
       case 3: 
@@ -277,10 +265,7 @@ int SUB (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a - b;
     	  break;
       case 3:
@@ -301,14 +286,12 @@ int SUB (int Rd, int Rn, int Operand2, int I, int S, int CC){
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         cur = a - b;
     	  break;
-      case 2: cur = CURRENT_STATE.REGS[Rn] + (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
+      case 2: 
+        cur = CURRENT_STATE.REGS[Rn] + (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a - b;
     	  break;
       case 3: 
@@ -365,10 +348,7 @@ int RSB (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = b - a;
     	  break;
       case 3:
@@ -393,10 +373,7 @@ int RSB (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = b - a;
     	  break;
       case 3: 
@@ -453,10 +430,7 @@ int ADD (int Rd, int Rn, int Operand2, int I, int S, int CC) {
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a + b;
     	  break;
       case 3:
@@ -481,10 +455,7 @@ int ADD (int Rd, int Rn, int Operand2, int I, int S, int CC) {
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a + b;
     	  break;
       case 3: 
@@ -541,10 +512,7 @@ int ADC (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a + b + C_CUR;
     	  break;
       case 3:
@@ -569,10 +537,7 @@ int ADC (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a + b + C_CUR;
     	  break;
       case 3: 
@@ -629,10 +594,7 @@ int SBC (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a - b - (~C_CUR&0x1);
     	  break;
       case 3:
@@ -657,10 +619,7 @@ int SBC (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a - b - (~C_CUR&0x1);
     	  break;
       case 3: 
@@ -717,10 +676,7 @@ int RSC (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = b - a - (~C_CUR&0x1);
     	  break;
       case 3:
@@ -745,10 +701,7 @@ int RSC (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = b - a - (~C_CUR&0x1);
     	  break;
       case 3: 
@@ -814,10 +767,7 @@ int TST (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a & b;
     	  break;
       case 3: // ROR
@@ -842,10 +792,7 @@ int TST (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a & b;
     	  break;
       case 3: 
@@ -903,10 +850,7 @@ int TEQ (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a ^ b;
     	  break;
       case 3:
@@ -931,10 +875,7 @@ int TEQ (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a ^ b;
     	  break;
       case 3: 
@@ -989,10 +930,7 @@ int CMP (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a - b;
     	  break;
       case 3:
@@ -1017,10 +955,7 @@ int CMP (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a - b;
     	  break;
       case 3: 
@@ -1076,10 +1011,7 @@ int CMN (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a + b;
     	  break;
       case 3:
@@ -1104,10 +1036,7 @@ int CMN (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a + b;
     	  break;
       case 3: 
@@ -1163,10 +1092,7 @@ int ORR (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a | b;
     	  break;
       case 3:
@@ -1191,10 +1117,7 @@ int ORR (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a | b;
     	  break;
       case 3: 
@@ -1249,10 +1172,7 @@ int MOV (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a;
     	  break;
       case 3:
@@ -1277,10 +1197,7 @@ int MOV (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a;
     	  break;
       case 3: 
@@ -1336,10 +1253,7 @@ int LSL (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a;
     	  break;
       case 3:
@@ -1364,10 +1278,7 @@ int LSL (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a;
     	  break;
       case 3: 
@@ -1423,10 +1334,7 @@ int LSR (int Rd, int Rn, int Operand2, int I, int S, int CC){
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a;
     	  break;
       case 3:
@@ -1451,10 +1359,7 @@ int LSR (int Rd, int Rn, int Operand2, int I, int S, int CC){
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        
-          
-          b >> msb | ~(~0U >> msb);
-        }
+        b >> msb | ~(~0U >> msb);
         cur = a;
     	  break;
       case 3: 
