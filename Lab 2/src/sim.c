@@ -225,9 +225,9 @@ int data_process(char* i_) {
       MOV(Rd, Rn, Operand2, I, S, CC);
       return 0;
     } else if(!strcmp(sh, "00")) { // LSL case
-      LSL(Rd, rm, shamt5);
+      LSL(Rd, rm, Operand2, I, S, CC);
     } else if(!strcmp(sh, "01")) {
-      LSR(Rd, rm, shamt5);
+      LSR(Rd, rm, Operand2, I, S, CC);
     }
   }
 
@@ -372,20 +372,20 @@ int transfer_process(char* i_) {
   }
   /* Add memory instructions here */ 
   if(!B && !L)
-    STR(rd, rn, src2);
+    STR(rd, rn, src2, I);
   else if(!B && L)
-    LDR(rd, rn, src2);
+    LDR(rd, rn, src2, I);
   else if(B && !L)
-    STRB(rd, rn, src2);
+    STRB(rd, rn, src2, I);
   else if(B && L)
-    LDRB(rd, rn, src2);
+    LDRB(rd, rn, src2, I);
   return 1;
 
 }
 
 int interruption_process(char* i_) {
 
-  SWI(i_);
+  SWI();
   RUN_BIT = 0;
   return 0;
 

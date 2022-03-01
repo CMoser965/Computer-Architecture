@@ -28,6 +28,33 @@
 #include <string.h>
 #include "shell.h"
 
+/**
+ * @brief Function call to return condition
+ * 
+ * @param CC 
+ * @return int 
+ */
+int check_cond(int CC) {
+  switch (CC) {
+    case 0: return Z_CUR;
+    case 1: return ~Z_CUR&1;
+    case 2: return C_CUR;
+    case 3: return ~C_CUR&1;
+    case 4: return N_CUR;
+    case 5: return ~N_CUR&1;
+    case 6: return V_CUR;
+    case 7: return ~V_CUR&1;
+    case 8: return C_CUR&(~Z_CUR);
+    case 9: return (~C_CUR&1)|Z_CUR;
+    case 10: return N_CUR == V_CUR;
+    case 11: return N_CUR != V_CUR; 
+    case 12: return (Z_CUR == 0) && (N_CUR == V_CUR);
+    case 13: return (Z_CUR ==1) || (N_CUR != V_CUR);
+    case 14:return 1;
+    case 15: return 1;
+    default: return -1;
+  }
+}
 
 /**
  * 
@@ -218,8 +245,6 @@ int EOR (int Rd, int Rn, int Operand2, int I, int S, int CC){
       NEXT_STATE.CPSR |= N_N;
     if (cur == 0)
       NEXT_STATE.CPSR |= Z_N;
-    if (setOverflow(a,b,cur))
-      NEXT_STATE.CPSR |= V_N;
     if (cur > 0xFFFFFFFF)
       NEXT_STATE.CPSR |= C_N;
   }	
@@ -845,9 +870,6 @@ int TST (int Rd, int Rn, int Operand2, int I, int S, int CC){
     if (cur == 0) {
       NEXT_STATE.CPSR |= Z_N;
     }
-    if (setOverflow(a, b, cur)){
-      NEXT_STATE.CPSR |= V_N;
-    }
     if (cur > 0xFFFFFFFF){
       NEXT_STATE.CPSR |= C_N;
     }
@@ -935,8 +957,6 @@ int TEQ (int Rd, int Rn, int Operand2, int I, int S, int CC){
       NEXT_STATE.CPSR |= N_N;
     if (cur == 0)
       NEXT_STATE.CPSR |= Z_N;
-    if (setOverflow(a,b,cur))
-      NEXT_STATE.CPSR |= V_N;
     if (cur > 0xFFFFFFFF)
       NEXT_STATE.CPSR |= C_N;
   }	
@@ -1197,8 +1217,6 @@ int ORR (int Rd, int Rn, int Operand2, int I, int S, int CC){
       NEXT_STATE.CPSR |= N_N;
     if (cur == 0)
       NEXT_STATE.CPSR |= Z_N;
-    if (setOverflow(a,b,cur))
-      NEXT_STATE.CPSR |= V_N;
     if (cur > 0xFFFFFFFF)
       NEXT_STATE.CPSR |= C_N;
   }	
@@ -1206,6 +1224,87 @@ int ORR (int Rd, int Rn, int Operand2, int I, int S, int CC){
 }
 
 int MOV (int Rd, int Rn, int Operand2, int I, int S, int CC){
+  int cur = 0;
+  int a = 0;
+  int b = 0;
+  if(I == 0) {
+    int sh = (Operand2 & 0x00000060) >> 5;
+    int shamt5 = (Operand2 & 0x00000F80) >> 7;
+    int bit4 = (Operand2 & 0x00000010) >> 4;
+    int Rm = Operand2 & 0x0000000F;
+    int Rs = (Operand2 & 0x00000F00) >> 8;
+    if (bit4 == 0) 
+      switch (sh) {
+      case 0:
+        a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] << shamt5;
+        cur = a;
+	      break;
+      case 1:
+        a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> shamt5;
+        cur = a;
+	      break;
+      case 2: 
+        a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> shamt5;
+        int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
+        for(int i = 0; i < shamt5; i++) {
+          msb >> 1;
+          b |= msb;
+        }
+        cur = a;
+    	  break;
+      case 3:
+	      a = CURRENT_STATE.REGS[Rn];
+        b = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
+        cur = a;
+    	  break;
+      }     
+    else
+      switch (sh) {
+      case 0:
+	      a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] << CURRENT_STATE.REGS[Rs];
+        cur = a;
+    	  break;
+      case 1:
+	      a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
+        cur = a;
+    	  break;
+      case 2: cur = CURRENT_STATE.REGS[Rn] + (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
+	      a = CURRENT_STATE.REGS[Rn];
+        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
+        int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
+        for(int i = 0; i < shamt5; i++) {
+          msb >> 1;
+          b |= msb;
+        }
+        cur = a;
+    	  break;
+      case 3: 
+        a = CURRENT_STATE.REGS[Rn];
+        b = (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]) | (CURRENT_STATE.REGS[Rm] << (32 - CURRENT_STATE.REGS[Rs]));
+        cur = a;
+    	  break;
+      }      
+  }
+  if (I == 1) {
+    int rotate = Operand2 >> 8;
+    int Imm = Operand2 & 0x000000FF;
+    a = CURRENT_STATE.REGS[Rn];
+    cur = a;
+  }
+  NEXT_STATE.REGS[Rd] = cur;
+  if (S == 1) {
+    if (cur < 0)
+      NEXT_STATE.CPSR |= N_N;
+    if (cur == 0)
+      NEXT_STATE.CPSR |= Z_N;
+    if (cur > 0xFFFFFFFF)
+      NEXT_STATE.CPSR |= C_N;
+  }	
   return 0;
 }
 
@@ -1318,8 +1417,6 @@ int BIC (int Rd, int Rn, int Operand2, int I, int S, int CC){
     b = Imm>>2*rotate|(Imm<<(32-2*rotate));
     cur = a & (~b);
   }
-
-  NEXT_STATE.REGS[Rd] = cur;
   if (S == 1) {
     if (cur < 0) {
       NEXT_STATE.CPSR |= N_N;
@@ -1327,13 +1424,11 @@ int BIC (int Rd, int Rn, int Operand2, int I, int S, int CC){
     if (cur == 0) {
       NEXT_STATE.CPSR |= Z_N;
     }
-    if (setOverflow(a, b, cur)){
-      NEXT_STATE.CPSR |= V_N;
-    }
     if (cur > 0xFFFFFFFF){
       NEXT_STATE.CPSR |= C_N;
     }
   }	
+  NEXT_STATE.REGS[Rd] = cur;
   return 0;
 }
 
@@ -1428,9 +1523,6 @@ int MVN (int Rd, int Rn, int Operand2, int I, int S, int CC){
     if (cur == 0) {
       NEXT_STATE.CPSR |= Z_N;
     }
-    if (setOverflow(a, b, cur)){
-      NEXT_STATE.CPSR |= V_N;
-    }
     if (cur > 0xFFFFFFFF){
       NEXT_STATE.CPSR |= C_N;
     }
@@ -1447,12 +1539,14 @@ int MVN (int Rd, int Rn, int Operand2, int I, int S, int CC){
  * BRANCH PROCESS
  * 
  */ 
-int B (int Rd, int Rn, int Operand2, int I, int S, int CC){
-
+int B (int imm24){
+  NEXT_STATE.PC = (CURRENT_STATE.PC + 8) + (imm24 << 2);
   return 0;
 }
 
-int BL (int Rd, int Rn, int Operand2, int I, int S, int CC){
+int BL (int imm24){
+  B(imm24);
+  NEXT_STATE.REGS[14] = (CURRENT_STATE.PC + 8) - 4;
   return 0;
 }
 
@@ -1465,13 +1559,25 @@ int BL (int Rd, int Rn, int Operand2, int I, int S, int CC){
 /*
 int MUL (char* i_);
 
-int MLA (char* i_);
+int MLA (int Rd, int Rn, int Rm, int Ra) {
+  NEXT_STATE.REGS[Rd] = (CURRENT_STATE.REGS[Rn] * CURRENT_STATE.REGS[Rm]) + CURRENT_STATE.REGS[Ra];
+  return 0;
+}
 
-int UMULL (char* i_);
+int UMULL (int Rd, int Rn, int Rm, int Ra) {
+  NEXT_STATE.REGS[Rd + Ra]  = CURRENT_STATE.REGS[Rn] * CURRENT_STATE.REGS[Rm];
+  return 0;
+}
 
-int UMLAL (char* i_);
+int UMLAL (int Rd, int Rn, int Rm, int Ra) {
+  NEXT_STATE.REGS[Rd + Ra]  = CURRENT_STATE.REGS[Rn] * CURRENT_STATE.REGS[Rm];
+  return 0;
+}
 
-int SMULL (char* i_);
+int SMULL (int Rd, int Rn, int Rm, int Ra) {
+  NEXT_STATE.REGS[Rd + Ra]  = CURRENT_STATE.REGS[Rn] * CURRENT_STATE.REGS[Rm];
+  return 0;
+}
 
 int SMLAL (char* i_);
 */
@@ -1482,12 +1588,12 @@ int SMLAL (char* i_);
  * MEMORY INSTRUCTIONS
  * 
  */
-int STR (int Rd, int Rn, int Operand2, int I, int S, int CC){
+int STR (int Rd, int Rn, int Operand2, int I){
   int cur = 0;
   if (I == 1){    //Immediate -> -I = 0
     //imm12 = Operand2
     //Store Rd in value equal to [Rn, +- src2]
-    
+
   } else {        // Register -> -I = 1
     // Store Rd in value equal to [Rn, +- src2]
   }
@@ -1495,15 +1601,15 @@ int STR (int Rd, int Rn, int Operand2, int I, int S, int CC){
   return 0;
 }
 
-int LDR (int Rd, int Rn, int Operand2, int I, int S, int CC){
+int LDR (int Rd, int Rn, int Operand2, int I){
   return 0;
 }
 
-int STRB (int Rd, int Rn, int Operand2, int I, int S, int CC){
+int STRB (int Rd, int Rn, int Operand2, int I){
   return 0;
 }
 
-int LDRB (int Rd, int Rn, int Operand2, int I, int S, int CC){
+int LDRB (int Rd, int Rn, int Operand2, int I){
   return 0;
 }
 /*
@@ -1530,7 +1636,7 @@ int LDRSH (int Rd, int Rn, int Operand2, int I, int S, int CC){
  * INTERRUPTION PROCESS
  * 
  */
-int SWI (int Rd, int Rn, int Operand2, int I, int S, int CC){
+int SWI (){
   return 0;
 }
 
