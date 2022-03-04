@@ -136,9 +136,9 @@ int data_process(char* i_) {
         rm[i] = operand2[i+8];
       shamt5[i] = operand2[i];
     }
-    int Rm = bchar_to_int(rm);
-    print("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
-
+    printf("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
+  }
+int Rm = bchar_to_int(rm);
   /* Example - use and replicate */
   if(!strcmp(d_opcode,"0100")) {
     printf("--- This is an ADD instruction. \n");
@@ -371,15 +371,17 @@ int transfer_process(char* i_) {
     printf("imm12 = %s\n", src2);
   }
   int imm12 = bchar_to_int(src2);
+  int RD = bchar_to_int(rd);
+  int RN = bchar_to_int(rn);
   /* Add memory instructions here */ 
   if(!B && !L)
-    STR(rd, rn, imm12, I);
+    STR(RD, RN, imm12, I);
   else if(!B && L)
-    LDR(rd, rn, imm12, I);
+    LDR(RD, RN, imm12, I);
   else if(B && !L)
-    STRB(rd, rn, imm12, I);
+    STRB(RD, RN, imm12, I);
   else if(B && L)
-    LDRB(rd, rn, imm12, I);
+    LDRB(RD, RN, imm12, I);
   return 1;
 
 }

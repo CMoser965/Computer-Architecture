@@ -1220,8 +1220,10 @@ int MOV (int Rd, int Rn, int Operand2, int I, int S, int CC){
   if (I == 1) {
     int rotate = Operand2 >> 8;
     int Imm = Operand2 & 0x000000FF;
+    cur = Imm>>2*rotate|(Imm<<(32-2*rotate));
+
     a = CURRENT_STATE.REGS[Rn];
-    cur = Imm;
+    //cur = Imm;
   }
   NEXT_STATE.REGS[Rd] = cur;
   if (S == 1) {
