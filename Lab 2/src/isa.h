@@ -1803,6 +1803,7 @@ int STR (int Rd, int Rn, int Operand2, int I){
     //imm12 = Operand2
     // address is value equal to [Rn, +- src2]
     //src2 = ...
+    src2 = Operand2;
   } else {        // Register -> ~I = 1
     // address iis value equal to [Rn, +- src2]
     int shamt5 = (Operand2 & 0x00000F80) >> 7; 
@@ -1829,19 +1830,124 @@ int STR (int Rd, int Rn, int Operand2, int I){
       }     
   }
   address = CURRENT_STATE.REGS[Rn] + src2;
-  mem_write_32(address, Rd);
+  mem_write_32(address, CURRENT_STATE.REGS[Rd]);
   return 0;
 }
 
 int LDR (int Rd, int Rn, int Operand2, int I){
+  int cur = 0;
+  int address = 0;
+  int src2 = 0;
+  if (~I == 0){    //Immediate 
+    //imm12 = Operand2
+    // address is value equal to [Rn, +- src2]
+    //src2 = ...
+    src2 = Operand2;
+  } else {        // Register -> ~I = 1
+    // address iis value equal to [Rn, +- src2]
+    int shamt5 = (Operand2 & 0x00000F80) >> 7; 
+    int sh = (Operand2 & 0x00000060) >> 5;
+    int bit4 = (Operand2 & 0x00000010) >> 4; 
+    int Rm = Operand2 & 0x0000000F;
+    switch (sh) {
+      case 0: // LLS
+        src2 = CURRENT_STATE.REGS[Rm] << shamt5;
+	      break;
+      case 1: // LRS
+        src2 = CURRENT_STATE.REGS[Rm] >> shamt5;
+	      break;
+      case 2: // ARS
+        if (CURRENT_STATE.REGS[Rm] < 0 && shamt5 > 0) {
+          src2 = CURRENT_STATE.REGS[Rm] >> shamt5 | ~(~0U >> shamt5);
+        } else {
+          src2 = CURRENT_STATE.REGS[Rm] >> shamt5;
+        }
+    	  break;
+      case 3: // ROR
+        src2 = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
+    	  break;
+      }     
+  }
+  address = CURRENT_STATE.REGS[Rn] + src2;
+  CURRENT_STATE.REGS[Rd] = mem_read_32(address);
   return 0;
 }
 
 int STRB (int Rd, int Rn, int Operand2, int I){
+  int cur = 0;
+  int address = 0;
+  int src2 = 0;
+  if (~I == 0){    //Immediate 
+    //imm12 = Operand2
+    // address is value equal to [Rn, +- src2]
+    //src2 = ...
+    src2 = Operand2;
+  } else {        // Register -> ~I = 1
+    // address iis value equal to [Rn, +- src2]
+    int shamt5 = (Operand2 & 0x00000F80) >> 7; 
+    int sh = (Operand2 & 0x00000060) >> 5;
+    int bit4 = (Operand2 & 0x00000010) >> 4; 
+    int Rm = Operand2 & 0x0000000F;
+    switch (sh) {
+      case 0: // LLS
+        src2 = CURRENT_STATE.REGS[Rm] << shamt5;
+	      break;
+      case 1: // LRS
+        src2 = CURRENT_STATE.REGS[Rm] >> shamt5;
+	      break;
+      case 2: // ARS
+        if (CURRENT_STATE.REGS[Rm] < 0 && shamt5 > 0) {
+          src2 = CURRENT_STATE.REGS[Rm] >> shamt5 | ~(~0U >> shamt5);
+        } else {
+          src2 = CURRENT_STATE.REGS[Rm] >> shamt5;
+        }
+    	  break;
+      case 3: // ROR
+        src2 = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
+    	  break;
+      }     
+  }
+  address = CURRENT_STATE.REGS[Rn] + src2;
+  mem_write_32(address, CURRENT_STATE.REGS[Rd] & 0xFF);
   return 0;
 }
 
 int LDRB (int Rd, int Rn, int Operand2, int I){
+  int cur = 0;
+  int address = 0;
+  int src2 = 0;
+  if (~I == 0){    //Immediate 
+    //imm12 = Operand2
+    // address is value equal to [Rn, +- src2]
+    //src2 = ...
+    src2 = Operand2;
+  } else {        // Register -> ~I = 1
+    // address iis value equal to [Rn, +- src2]
+    int shamt5 = (Operand2 & 0x00000F80) >> 7; 
+    int sh = (Operand2 & 0x00000060) >> 5;
+    int bit4 = (Operand2 & 0x00000010) >> 4; 
+    int Rm = Operand2 & 0x0000000F;
+    switch (sh) {
+      case 0: // LLS
+        src2 = CURRENT_STATE.REGS[Rm] << shamt5;
+	      break;
+      case 1: // LRS
+        src2 = CURRENT_STATE.REGS[Rm] >> shamt5;
+	      break;
+      case 2: // ARS
+        if (CURRENT_STATE.REGS[Rm] < 0 && shamt5 > 0) {
+          src2 = CURRENT_STATE.REGS[Rm] >> shamt5 | ~(~0U >> shamt5);
+        } else {
+          src2 = CURRENT_STATE.REGS[Rm] >> shamt5;
+        }
+    	  break;
+      case 3: // ROR
+        src2 = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
+    	  break;
+      }     
+  }
+  address = CURRENT_STATE.REGS[Rn] + src2;
+  CURRENT_STATE.REGS[Rd] = mem_read_32(address) & 0xFF;
   return 0;
 }
 /*
