@@ -136,7 +136,7 @@ int data_process(char* i_) {
         rm[i] = operand2[i+8];
       shamt5[i] = operand2[i];
     }
-    print("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
+    printf("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
   }
 
   /* Example - use and replicate */
@@ -306,29 +306,29 @@ int mul_process(char* i_) {
   }
   printf("opcode = %s\n condition = %s\n Rd = %s\n Ra = %s\n Rm = %s\n Rn = %s\n", d_opcode, d_cond, Rd, Ra, Rm, Rn);
   /* function passes */
-  if(!strcmp(d_opcode, "000")) {
-    printf("--- This is a MUL instruction. \n");
-    MUL(Rd, Rn, Rm);
-    return 0;
-  } else if(!strcmp(d_opcode, "001")) {
-    printf("--- This is an MLA instruction. \n");
-    MLA(Rd, Rn, Rm, Ra);
-    return 0;
-  } else if(!strcmp(d_opcode, "100")){
-    printf("--- This is a UMULL instruction. \n");
-    UMULL(Rd, Rn, Rm, Ra);
-    return 0;
-  } else if(!strcmp(d_opcode, "101")){
-    printf("--- This is a UMLAL instruction. \n");
-    UMLAL(Rd, Rn, Rm, Ra);
-    return 0;
-  } else if(!strcmp(d_opcode, "110")){
-    SMULL(Rd, Rn, Rm, Ra);
-    return 0;
-  } else if(!strcmp(d_opcode, "111")){
-    SMLAL(Rd, Rn, Rm, Ra);
-    return 0;
-  }
+  // if(!strcmp(d_opcode, "000")) {
+  //   printf("--- This is a MUL instruction. \n");
+  //   MUL(Rd, Rn, Rm);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "001")) {
+  //   printf("--- This is an MLA instruction. \n");
+  //   MLA(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "100")){
+  //   printf("--- This is a UMULL instruction. \n");
+  //   UMULL(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "101")){
+  //   printf("--- This is a UMLAL instruction. \n");
+  //   UMLAL(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "110")){
+  //   SMULL(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "111")){
+  //   SMLAL(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } 
   return 1;
 }
 
@@ -356,7 +356,7 @@ int transfer_process(char* i_) {
     src2[i] = i_[20+i];
   }
   char shamt5[6]; char sh[3]; char rm[5];
-  print("I = %d\n", I);
+  printf("I = %d\n", I);
   if(I) {
     shamt5[5] = '\0'; sh[2] = '\0'; rm[4] = '\0';
     for(int i = 0; i < 6; i++) {
@@ -366,9 +366,9 @@ int transfer_process(char* i_) {
         rm[i] = src2[i+8];
       shamt5[i] = src2[i];
     }
-    print("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
+    printf("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
   } else {
-    print("imm12 = %s\n", src2);
+    printf("imm12 = %s\n", src2);
   }
   /* Add memory instructions here */ 
   if(!B && !L)

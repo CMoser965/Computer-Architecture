@@ -56,6 +56,16 @@ int check_cond(int CC) {
   }
 }
 
+int setOverflow (int a, int b, int c){
+  //0xXXXX_XXXX 
+  int MSB = 0x10000000;
+  if ( ( (a & MSB) & (b & MSB) & !(c & MSB) ) || ( !(a & MSB) & !(b & MSB) & (c & MSB) ) ) {
+    return 1;
+  }
+  return 0;
+}
+
+
 /**
  * 
  * DATA PROCESSING
@@ -1211,7 +1221,7 @@ int MOV (int Rd, int Rn, int Operand2, int I, int S, int CC){
     int rotate = Operand2 >> 8;
     int Imm = Operand2 & 0x000000FF;
     a = CURRENT_STATE.REGS[Rn];
-    cur = a;
+    cur = Imm;
   }
   NEXT_STATE.REGS[Rd] = cur;
   if (S == 1) {
@@ -1996,13 +2006,6 @@ int SWI (){
     Move:       MOVS  MVNS
     Multiply:   MULS  MLAS  SMLALS  SMULLS  UMLALS  UMULLS
 */
-int setOverflow (int a, int b, int c){
-  //0xXXXX_XXXX 
-  int MSB = 0x10000000;
-  if ( ( (a & MSB) & (b & MSB) & !(c & MSB) ) || ( !(a & MSB) & !(b & MSB) & (c & MSB) ) ) {
-    return 1;
-  }
-  return 0;
-}
+
 
 #endif
