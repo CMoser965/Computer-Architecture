@@ -136,6 +136,7 @@ int data_process(char* i_) {
         rm[i] = operand2[i+8];
       shamt5[i] = operand2[i];
     }
+    int Rm = bchar_to_int(rm);
     print("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
   }
 
@@ -225,9 +226,9 @@ int data_process(char* i_) {
       MOV(Rd, Rn, Operand2, I, S, CC);
       return 0;
     } else if(!strcmp(sh, "00")) { // LSL case
-      LSL(Rd, rm, Operand2, I, S, CC);
+      LSL(Rd, Rm, Operand2, I, S, CC);
     } else if(!strcmp(sh, "01")) {
-      LSR(Rd, rm, Operand2, I, S, CC);
+      LSR(Rd, Rm, Operand2, I, S, CC);
     }
   }
 
@@ -370,15 +371,16 @@ int transfer_process(char* i_) {
   } else {
     print("imm12 = %s\n", src2);
   }
+  int imm12 = bchar_to_int(src2);
   /* Add memory instructions here */ 
   if(!B && !L)
-    STR(rd, rn, src2, I);
+    STR(rd, rn, imm12, I);
   else if(!B && L)
-    LDR(rd, rn, src2, I);
+    LDR(rd, rn, imm12, I);
   else if(B && !L)
-    STRB(rd, rn, src2, I);
+    STRB(rd, rn, imm12, I);
   else if(B && L)
-    LDRB(rd, rn, src2, I);
+    LDRB(rd, rn, imm12, I);
   return 1;
 
 }
