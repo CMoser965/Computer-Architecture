@@ -127,7 +127,7 @@ int data_process(char* i_) {
   
   // use for LSL and LSR case
   char shamt5[6]; char sh[3]; char rm[5];
-  if(I) {
+  if(!I) {
     shamt5[5] = '\0'; sh[2] = '\0'; rm[4] = '\0';
     for(int i = 0; i < 6; i++) {
       if(i<2) 
@@ -136,10 +136,9 @@ int data_process(char* i_) {
         rm[i] = operand2[i+8];
       shamt5[i] = operand2[i];
     }
-    int Rm = bchar_to_int(rm);
-    print("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
+    printf("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
   }
-
+int Rm = bchar_to_int(rm);
   /* Example - use and replicate */
   if(!strcmp(d_opcode,"0100")) {
     printf("--- This is an ADD instruction. \n");
@@ -219,17 +218,12 @@ int data_process(char* i_) {
     ORR(Rd, Rn, Operand2, I, S, CC);
     return 0;
   }
-
+  
+  // Takes care of LSL LSR ASR and ROR
   else if(!strcmp(d_opcode, "1101")) {
-    if(I) { // MOV case
-      printf("--- This is an MOV instruction. \n");
+    printf("--- This is an MOV instruction. \n");
       MOV(Rd, Rn, Operand2, I, S, CC);
       return 0;
-    } else if(!strcmp(sh, "00")) { // LSL case
-      LSL(Rd, Rm, Operand2, I, S, CC);
-    } else if(!strcmp(sh, "01")) {
-      LSR(Rd, Rm, Operand2, I, S, CC);
-    }
   }
 
   else if(!strcmp(d_opcode, "1110")) {
@@ -307,29 +301,29 @@ int mul_process(char* i_) {
   }
   printf("opcode = %s\n condition = %s\n Rd = %s\n Ra = %s\n Rm = %s\n Rn = %s\n", d_opcode, d_cond, Rd, Ra, Rm, Rn);
   /* function passes */
-  if(!strcmp(d_opcode, "000")) {
-    printf("--- This is a MUL instruction. \n");
-    MUL(Rd, Rn, Rm);
-    return 0;
-  } else if(!strcmp(d_opcode, "001")) {
-    printf("--- This is an MLA instruction. \n");
-    MLA(Rd, Rn, Rm, Ra);
-    return 0;
-  } else if(!strcmp(d_opcode, "100")){
-    printf("--- This is a UMULL instruction. \n");
-    UMULL(Rd, Rn, Rm, Ra);
-    return 0;
-  } else if(!strcmp(d_opcode, "101")){
-    printf("--- This is a UMLAL instruction. \n");
-    UMLAL(Rd, Rn, Rm, Ra);
-    return 0;
-  } else if(!strcmp(d_opcode, "110")){
-    SMULL(Rd, Rn, Rm, Ra);
-    return 0;
-  } else if(!strcmp(d_opcode, "111")){
-    SMLAL(Rd, Rn, Rm, Ra);
-    return 0;
-  }
+  // if(!strcmp(d_opcode, "000")) {
+  //   printf("--- This is a MUL instruction. \n");
+  //   MUL(Rd, Rn, Rm);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "001")) {
+  //   printf("--- This is an MLA instruction. \n");
+  //   MLA(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "100")){
+  //   printf("--- This is a UMULL instruction. \n");
+  //   UMULL(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "101")){
+  //   printf("--- This is a UMLAL instruction. \n");
+  //   UMLAL(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "110")){
+  //   SMULL(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "111")){
+  //   SMLAL(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } 
   return 1;
 }
 
@@ -357,7 +351,7 @@ int transfer_process(char* i_) {
     src2[i] = i_[20+i];
   }
   char shamt5[6]; char sh[3]; char rm[5];
-  print("I = %d\n", I);
+  printf("I = %d\n", I);
   if(I) {
     shamt5[5] = '\0'; sh[2] = '\0'; rm[4] = '\0';
     for(int i = 0; i < 6; i++) {
@@ -367,20 +361,22 @@ int transfer_process(char* i_) {
         rm[i] = src2[i+8];
       shamt5[i] = src2[i];
     }
-    print("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
+    printf("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
   } else {
-    print("imm12 = %s\n", src2);
+    printf("imm12 = %s\n", src2);
   }
   int imm12 = bchar_to_int(src2);
+  int RD = bchar_to_int(rd);
+  int RN = bchar_to_int(rn);
   /* Add memory instructions here */ 
   if(!B && !L)
-    STR(rd, rn, imm12, I);
+    STR(RD, RN, imm12, I);
   else if(!B && L)
-    LDR(rd, rn, imm12, I);
+    LDR(RD, RN, imm12, I);
   else if(B && !L)
-    STRB(rd, rn, imm12, I);
+    STRB(RD, RN, imm12, I);
   else if(B && L)
-    LDRB(rd, rn, imm12, I);
+    LDRB(RD, RN, imm12, I);
   return 1;
 
 }

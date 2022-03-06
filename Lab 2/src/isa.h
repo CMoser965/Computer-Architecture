@@ -56,6 +56,16 @@ int check_cond(int CC) {
   }
 }
 
+int setOverflow (int a, int b, int c){
+  //0xXXXX_XXXX 
+  int MSB = 0x10000000;
+  if ( ( (a & MSB) & (b & MSB) & !(c & MSB) ) || ( !(a & MSB) & !(b & MSB) & (c & MSB) ) ) {
+    return 1;
+  }
+  return 0;
+}
+
+
 /**
  * 
  * DATA PROCESSING
@@ -1150,7 +1160,7 @@ int MOV (int Rd, int Rn, int Operand2, int I, int S, int CC){
   int cur = 0;
   int a = 0;
   int b = 0;
-  if(I == 0) {
+  if(I == 0) { //MOV
     int sh = (Operand2 & 0x00000060) >> 5;
     int shamt5 = (Operand2 & 0x00000F80) >> 7;
     int bit4 = (Operand2 & 0x00000010) >> 4;
@@ -1158,389 +1168,62 @@ int MOV (int Rd, int Rn, int Operand2, int I, int S, int CC){
     int Rs = (Operand2 & 0x00000F00) >> 8;
     if (bit4 == 0) 
       switch (sh) {
-      case 0:
+      case 0: //LSL
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] << shamt5;
-        cur = a;
+        cur = b;
 	      break;
-      case 1:
+      case 1: //LSR
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
-        cur = a;
+        cur = b;
 	      break;
-      case 2: 
+      case 2: //ASR
         a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> shamt5;
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
         b >> msb | ~(~0U >> msb);
-        cur = a;
+        cur = b;
     	  break;
-      case 3:
+      case 3: //ROR
 	      a = CURRENT_STATE.REGS[Rn];
         b = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
-        cur = a;
+        cur = b;
     	  break;
       }     
-    else
+    else //LSL and LSR and ASR and ROR
       switch (sh) {
-      case 0:
+      case 0: //LSL
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] << CURRENT_STATE.REGS[Rs];
-        cur = a;
+        cur = b;
     	  break;
-      case 1:
+      case 1: //LSR
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
-        cur = a;
+        cur = b;
     	  break;
-      case 2: cur = CURRENT_STATE.REGS[Rn] + (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
+      case 2: // ASR
 	      a = CURRENT_STATE.REGS[Rn];
         b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
         int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
         b >> msb | ~(~0U >> msb);
-        cur = a;
+        cur = b;
     	  break;
-      case 3: 
+      case 3: //ROR
         a = CURRENT_STATE.REGS[Rn];
         b = (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]) | (CURRENT_STATE.REGS[Rm] << (32 - CURRENT_STATE.REGS[Rs]));
-        cur = a;
+        cur = b;
     	  break;
       }      
   }
   if (I == 1) {
     int rotate = Operand2 >> 8;
     int Imm = Operand2 & 0x000000FF;
-    a = CURRENT_STATE.REGS[Rn];
-    cur = a;
-  }
-  NEXT_STATE.REGS[Rd] = cur;
-  if (S == 1) {
-    if (cur < 0)
-      NEXT_STATE.CPSR |= N_N;
-    if (cur == 0)
-      NEXT_STATE.CPSR |= Z_N;
-    if (cur > 0xFFFFFFFF)
-      NEXT_STATE.CPSR |= C_N;
-  }	
-  return 0;
-}
+    cur = Imm>>2*rotate|(Imm<<(32-2*rotate));
 
-//1101 -> with MOV
-int LSL (int Rd, int Rn, int Operand2, int I, int S, int CC){
-  int cur = 0;
-  int a = 0;
-  int b = 0;
-  if(I == 0) {
-    int sh = (Operand2 & 0x00000060) >> 5;
-    int shamt5 = (Operand2 & 0x00000F80) >> 7;
-    int bit4 = (Operand2 & 0x00000010) >> 4;
-    int Rm = Operand2 & 0x0000000F;
-    int Rs = (Operand2 & 0x00000F00) >> 8;
-    Rm = Rm << ((shamt5 & ~bit4) | (Rs & bit4));
-    if (bit4 == 0) 
-      switch (sh) {
-      case 0:
-        a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] << shamt5;
-        cur = a;
-	      break;
-      case 1:
-        a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> shamt5;
-        cur = a;
-	      break;
-      case 2: 
-        a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> shamt5;
-        int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        b >> msb | ~(~0U >> msb);
-        cur = a;
-    	  break;
-      case 3:
-	      a = CURRENT_STATE.REGS[Rn];
-        b = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
-        cur = a;
-    	  break;
-      }     
-    else
-      switch (sh) {
-      case 0:
-	      a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] << CURRENT_STATE.REGS[Rs];
-        cur = a;
-    	  break;
-      case 1:
-	      a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
-        cur = a;
-    	  break;
-      case 2: cur = CURRENT_STATE.REGS[Rn] + (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
-	      a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
-        int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        b >> msb | ~(~0U >> msb);
-        cur = a;
-    	  break;
-      case 3: 
-        a = CURRENT_STATE.REGS[Rn];
-        b = (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]) | (CURRENT_STATE.REGS[Rm] << (32 - CURRENT_STATE.REGS[Rs]));
-        cur = a;
-    	  break;
-      }      
-  }
-  if (I == 1) {
-    int rotate = Operand2 >> 8;
-    int Imm = Operand2 & 0x000000FF;
     a = CURRENT_STATE.REGS[Rn];
-    cur = a;
-  }
-  NEXT_STATE.REGS[Rd] = cur;
-  if (S == 1) {
-    if (cur < 0)
-      NEXT_STATE.CPSR |= N_N;
-    if (cur == 0)
-      NEXT_STATE.CPSR |= Z_N;
-    if (cur > 0xFFFFFFFF)
-      NEXT_STATE.CPSR |= C_N;
-  }	
-  return 0;
-}
-
-//1101 -> with MOV
-int LSR (int Rd, int Rn, int Operand2, int I, int S, int CC){
-  int cur = 0;
-  int a = 0;
-  int b = 0;
-  if(I == 0) {
-    int sh = (Operand2 & 0x00000060) >> 5;
-    int shamt5 = (Operand2 & 0x00000F80) >> 7;
-    int bit4 = (Operand2 & 0x00000010) >> 4;
-    int Rm = Operand2 & 0x0000000F;
-    int Rs = (Operand2 & 0x00000F00) >> 8;
-    Rm = Rm >> ((shamt5 & ~bit4) | (Rs & bit4));
-    if (bit4 == 0) 
-      switch (sh) {
-      case 0:
-        a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] << shamt5;
-        cur = a;
-	      break;
-      case 1:
-        a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> shamt5;
-        cur = a;
-	      break;
-      case 2: 
-        a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> shamt5;
-        int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        b >> msb | ~(~0U >> msb);
-        cur = a;
-    	  break;
-      case 3:
-	      a = CURRENT_STATE.REGS[Rn];
-        b = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
-        cur = a;
-    	  break;
-      }     
-    else
-      switch (sh) {
-      case 0:
-	      a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] << CURRENT_STATE.REGS[Rs];
-        cur = a;
-    	  break;
-      case 1:
-	      a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
-        cur = a;
-    	  break;
-      case 2: cur = CURRENT_STATE.REGS[Rn] + (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
-	      a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
-        int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        b >> msb | ~(~0U >> msb);
-        cur = a;
-    	  break;
-      case 3: 
-        a = CURRENT_STATE.REGS[Rn];
-        b = (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]) | (CURRENT_STATE.REGS[Rm] << (32 - CURRENT_STATE.REGS[Rs]));
-        cur = a;
-    	  break;
-      }      
-  }
-  if (I == 1) {
-    int rotate = Operand2 >> 8;
-    int Imm = Operand2 & 0x000000FF;
-    a = CURRENT_STATE.REGS[Rn];
-    cur = a;
-  }
-  NEXT_STATE.REGS[Rd] = cur;
-  if (S == 1) {
-    if (cur < 0)
-      NEXT_STATE.CPSR |= N_N;
-    if (cur == 0)
-      NEXT_STATE.CPSR |= Z_N;
-    if (cur > 0xFFFFFFFF)
-      NEXT_STATE.CPSR |= C_N;
-  }	
-  return 0;
-}
-
-//1101 -> with MOV
-int ASR (int Rd, int Rn, int Operand2, int I, int S, int CC){
-  int cur = 0;
-  int a = 0;
-  int b = 0;
-  if(I == 0) {
-    int sh = (Operand2 & 0x00000060) >> 5;
-    int shamt5 = (Operand2 & 0x00000F80) >> 7;
-    int bit4 = (Operand2 & 0x00000010) >> 4;
-    int Rm = Operand2 & 0x0000000F;
-    int Rs = (Operand2 & 0x00000F00) >> 8;
-    int msb = Rm & 0x10000000;
-        for(int i = 0; i < ((shamt5 & ~bit4) | (Rs & bit4)); i++) {
-          
-          Rm |= msb;
-        }
-    if (bit4 == 0) 
-      switch (sh) {
-      case 0:
-        a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] << shamt5;
-        cur = a;
-	      break;
-      case 1:
-        a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> shamt5;
-        cur = a;
-	      break;
-      case 2: 
-        a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> shamt5;
-        int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        b >> msb | ~(~0U >> msb);
-        cur = a;
-    	  break;
-      case 3:
-	      a = CURRENT_STATE.REGS[Rn];
-        b = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
-        cur = a;
-    	  break;
-      }     
-    else
-      switch (sh) {
-      case 0:
-	      a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] << CURRENT_STATE.REGS[Rs];
-        cur = a;
-    	  break;
-      case 1:
-	      a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
-        cur = a;
-    	  break;
-      case 2: cur = CURRENT_STATE.REGS[Rn] + (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
-	      a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
-        int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        b >> msb | ~(~0U >> msb);
-        cur = a;
-    	  break;
-      case 3: 
-        a = CURRENT_STATE.REGS[Rn];
-        b = (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]) | (CURRENT_STATE.REGS[Rm] << (32 - CURRENT_STATE.REGS[Rs]));
-        cur = a;
-    	  break;
-      }      
-  }
-  if (I == 1) {
-    int rotate = Operand2 >> 8;
-    int Imm = Operand2 & 0x000000FF;
-    a = CURRENT_STATE.REGS[Rn];
-    cur = a;
-  }
-  NEXT_STATE.REGS[Rd] = cur;
-  if (S == 1) {
-    if (cur < 0)
-      NEXT_STATE.CPSR |= N_N;
-    if (cur == 0)
-      NEXT_STATE.CPSR |= Z_N;
-    if (cur > 0xFFFFFFFF)
-      NEXT_STATE.CPSR |= C_N;
-  }	
-  return 0;
-}
-
-//1101 -> with MOV
-int ROR (int Rd, int Rn, int Operand2, int I, int S, int CC){
-  int cur = 0;
-  int a = 0;
-  int b = 0;
-  if(I == 0) {
-    int sh = (Operand2 & 0x00000060) >> 5;
-    int shamt5 = (Operand2 & 0x00000F80) >> 7;
-    int bit4 = (Operand2 & 0x00000010) >> 4;
-    int Rm = Operand2 & 0x0000000F;
-    int Rs = (Operand2 & 0x00000F00) >> 8;
-    int msb = Rm & 0x10000000;
-    Rm >> msb | ~(~0U >> msb);
-    if (bit4 == 0) 
-      switch (sh) {
-      case 0:
-        a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] << shamt5;
-        cur = a;
-	      break;
-      case 1:
-        a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> shamt5;
-        cur = a;
-	      break;
-      case 2: 
-        a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> shamt5;
-        int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        b >> msb | ~(~0U >> msb);
-        cur = a;
-    	  break;
-      case 3:
-	      a = CURRENT_STATE.REGS[Rn];
-        b = (CURRENT_STATE.REGS[Rm] >> shamt5) | (CURRENT_STATE.REGS[Rm] << (32 - shamt5));
-        cur = a;
-    	  break;
-      }     
-    else
-      switch (sh) {
-      case 0:
-	      a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] << CURRENT_STATE.REGS[Rs];
-        cur = a;
-    	  break;
-      case 1:
-	      a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
-        cur = a;
-    	  break;
-      case 2: cur = CURRENT_STATE.REGS[Rn] + (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]);
-	      a = CURRENT_STATE.REGS[Rn];
-        b = CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs];
-        int msb = CURRENT_STATE.REGS[Rm] & 0x10000000;
-        b >> msb | ~(~0U >> msb);
-        cur = a;
-    	  break;
-      case 3: 
-        a = CURRENT_STATE.REGS[Rn];
-        b = (CURRENT_STATE.REGS[Rm] >> CURRENT_STATE.REGS[Rs]) | (CURRENT_STATE.REGS[Rm] << (32 - CURRENT_STATE.REGS[Rs]));
-        cur = a;
-    	  break;
-      }      
-  }
-  if (I == 1) {
-    int rotate = Operand2 >> 8;
-    int Imm = Operand2 & 0x000000FF;
-    a = CURRENT_STATE.REGS[Rn];
-    cur = a;
+    //cur = Imm;
   }
   NEXT_STATE.REGS[Rd] = cur;
   if (S == 1) {
@@ -1747,12 +1430,12 @@ int MVN (int Rd, int Rn, int Operand2, int I, int S, int CC){
  * 
  */ 
 int B (int imm24){
-  NEXT_STATE.PC = (CURRENT_STATE.PC + 8) + (imm24 << 2);
+  NEXT_STATE.PC = (CURRENT_STATE.PC + 4) + (imm24 << 2);
   return 0;
 }
 
 int BL (int imm24){
-  B(imm24);
+  NEXT_STATE.PC = (CURRENT_STATE.PC + 4) + (imm24 << 2);
   NEXT_STATE.REGS[14] = (CURRENT_STATE.PC + 8) - 4;
   return 0;
 }
@@ -1996,13 +1679,6 @@ int SWI (){
     Move:       MOVS  MVNS
     Multiply:   MULS  MLAS  SMLALS  SMULLS  UMLALS  UMULLS
 */
-int setOverflow (int a, int b, int c){
-  //0xXXXX_XXXX 
-  int MSB = 0x10000000;
-  if ( ( (a & MSB) & (b & MSB) & !(c & MSB) ) || ( !(a & MSB) & !(b & MSB) & (c & MSB) ) ) {
-    return 1;
-  }
-  return 0;
-}
+
 
 #endif
