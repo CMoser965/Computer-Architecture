@@ -1422,9 +1422,6 @@ int MVN (int Rd, int Rn, int Operand2, int I, int S, int CC){
 }
 
 
-
-
-
 /**
  * 
  * BRANCH PROCESS
