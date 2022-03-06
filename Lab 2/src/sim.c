@@ -127,7 +127,7 @@ int data_process(char* i_) {
   
   // use for LSL and LSR case
   char shamt5[6]; char sh[3]; char rm[5];
-  if(I) {
+  if(!I) {
     shamt5[5] = '\0'; sh[2] = '\0'; rm[4] = '\0';
     for(int i = 0; i < 6; i++) {
       if(i<2) 
@@ -218,17 +218,12 @@ int Rm = bchar_to_int(rm);
     ORR(Rd, Rn, Operand2, I, S, CC);
     return 0;
   }
-
+  
+  // Takes care of LSL LSR ASR and ROR
   else if(!strcmp(d_opcode, "1101")) {
-    if(I) { // MOV case
-      printf("--- This is an MOV instruction. \n");
+    printf("--- This is an MOV instruction. \n");
       MOV(Rd, Rn, Operand2, I, S, CC);
       return 0;
-    } else if(!strcmp(sh, "00")) { // LSL case
-      LSL(Rd, Rm, Operand2, I, S, CC);
-    } else if(!strcmp(sh, "01")) {
-      LSR(Rd, Rm, Operand2, I, S, CC);
-    }
   }
 
   else if(!strcmp(d_opcode, "1110")) {
