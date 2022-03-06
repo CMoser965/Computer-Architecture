@@ -992,6 +992,7 @@ int CMP (int Rd, int Rn, int Operand2, int I, int S, int CC){
     if (cur > 0xFFFFFFFF)
       NEXT_STATE.CPSR |= C_N;
   }	
+  printf("Value of comparison: %d\nS=%d\nFLAGS: \nN: %d\nZ: %d\nV: %d\nC: %d\n", cur, S, N_N, Z_N, V_N, C_N);
   return 0;
 }
 

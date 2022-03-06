@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Feb 18 16:57:40 2022
+# Make data base, printed on Sat Mar  5 18:36:30 2022
 
 # Variables
 
@@ -53,7 +53,7 @@ PATH = /home/chmoser/.vscode-server/bin/f80445acd5a3dadef24aa209168452a3d97cc326
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-96e2e94d-1394-48c5-a1f6-1439792fe240.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-958aa850-6810-4bcb-8864-c435bf0c75cf.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -75,7 +75,7 @@ LESSCLOSE = /usr/bin/lesspipe %s %s
 # environment
 LOGNAME = chmoser
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
@@ -207,7 +207,7 @@ GNUmakefile:
 # strcache performance: lookups = 17 / hit rate = 17%
 # hash-table stats:
 # Load=14/8192=0%, Rehash=0, Collisions=1/17=6%
-# Finished Make data base on Fri Feb 18 16:57:40 2022
+# Finished Make data base on Sat Mar  5 18:36:30 2022
 
  
 make: *** No rule to make target 'all'.  Stop.
