@@ -9,33 +9,33 @@ z2
 cModel Technology
 Z0 dC:/Users/icook/Documents/Repo/Lab 3/hdl
 T_opt
-!s110 1647028439
-VebzO4CPfXOZ]jQ87oAY5B1
+!s110 1647041084
+V5TVE`LC;?jkV?Sf[Igzcd0
 04 9 4 work testbench fast 0
-=1-b07b252c50e0-622ba8d6-2bc-3678
+=1-b07b252c50e0-622bda3b-38c-1ea0
 o-quiet -auto_acc_if_foreign -work work -error 3015 +acc
 Z1 tCvgOpt 0
 n@_opt
 OL;O;10.7f;67
 vadder
 Z2 DXx6 sv_std 3 std 0 22 d=_JfHTnXCN[H5FjiaJJc0
-Z3 !s110 1647028438
+Z3 !s110 1647041083
 !i10b 1
-!s100 <9MnzmDjHGC;UKVNm61]<0
-IWg3Vg]R:b=mPRJDnAfz`M2
+!s100 JL2no4@>anQ07R]OU`=c40
+IGKbQ43efUY`6nMm[6@HMA1
 Z4 VDg1SIo80bB@j0V0VzS_@n1
 Z5 !s105 arm_single_sv_unit
 S1
 R0
-Z6 w1647027956
+Z6 w1647041068
 Z7 8arm_single.sv
 Z8 Farm_single.sv
-L0 414
+L0 436
 Z9 OL;L;10.7f;67
 r1
 !s85 0
 31
-Z10 !s108 1647028437.000000
+Z10 !s108 1647041083.000000
 Z11 !s107 tb.sv|top.sv|arm_single.sv|dmem.v|imem.v|
 Z12 !s90 -reportprogress|300|imem.v|dmem.v|arm_single.sv|top.sv|tb.sv|
 !i113 0
@@ -45,8 +45,8 @@ valu
 R2
 R3
 !i10b 1
-!s100 cgB11O3OYOT:F7XS31d]N1
-I:5fX[fZWbN=[cG<elQ5@H3
+!s100 hMo?H>O8E;iZRdh@1>V=93
+I5R8h;@IWLikLGR6n@`1_21
 R4
 R5
 S1
@@ -54,7 +54,7 @@ R0
 R6
 R7
 R8
-L0 454
+L0 476
 R9
 r1
 !s85 0
@@ -69,8 +69,8 @@ varm
 R2
 R3
 !i10b 1
-!s100 ZD8UF]gLGGM<RWczY9AeS2
-IPeP@zLG1klcUMB<UYH@DR3
+!s100 m5AG8RLQo:LJJoHZ<OPW[0
+I8XbRjY;6mJ@=PGQR5SK9Z3
 R4
 R5
 S1
@@ -93,8 +93,8 @@ vcondcheck
 R2
 R3
 !i10b 1
-!s100 h;IC[`nEX1CFWBQ0[VPlM2
-ICE`R5E`jMk]=UQdiJUXJH3
+!s100 lOJn1bJXC3lXac1VU9VSV3
+IIj6k>:FlUo@MPZX:<ifBL2
 R4
 R5
 S1
@@ -102,7 +102,7 @@ R0
 R6
 R7
 R8
-L0 261
+L0 281
 R9
 r1
 !s85 0
@@ -117,8 +117,8 @@ vcondlogic
 R2
 R3
 !i10b 1
-!s100 @VRBC1@2Ua84`b5M>>fIb1
-Ii@=1Fd2^CFgg9[iO]6XR>3
+!s100 `nILdj0S32dHHoV[DgdM@1
+IeRi:=6VnVNB8_:Zj9MZHo3
 R4
 R5
 S1
@@ -126,7 +126,7 @@ R0
 R6
 R7
 R8
-L0 227
+L0 245
 R9
 r1
 !s85 0
@@ -141,8 +141,8 @@ vcontroller
 R2
 R3
 !i10b 1
-!s100 Gc1n:?85;FEnED4]l>o9X0
-IzJDACU03I<ROb3A8==:k83
+!s100 U@LoVnY5Jm6UR`VMH=bC03
+I]3jfj4i691:HOIgJi:jTX3
 R4
 R5
 S1
@@ -150,7 +150,7 @@ R0
 R6
 R7
 R8
-L0 123
+L0 127
 R9
 r1
 !s85 0
@@ -165,8 +165,8 @@ vdatapath
 R2
 R3
 !i10b 1
-!s100 z[>]jAa5_HY7bSk1IoT2F3
-IG`7@zn9nB]JNUfnKnYf8U2
+!s100 La3dE5lVF]_11ooZj^6Yl2
+IM<5IMYndOg:cVmObg2bgK1
 R4
 R5
 S1
@@ -174,7 +174,7 @@ R0
 R6
 R7
 R8
-L0 292
+L0 312
 R9
 r1
 !s85 0
@@ -189,8 +189,8 @@ vdecoder
 R2
 R3
 !i10b 1
-!s100 lTB4Rg@mi25QT4?OaV;hT3
-Ija]X6JH5;k7bgGM;G1oFE3
+!s100 V1`X=XkQk[m;^C?H<dSLg2
+I@bBBoDz<C6gZoJmD>^FQc3
 R4
 R5
 S1
@@ -198,7 +198,7 @@ R0
 R6
 R7
 R8
-L0 164
+L0 170
 R9
 r1
 !s85 0
@@ -216,10 +216,10 @@ R3
 ID9W;`U;I>PIc@51oLRBh:2
 R4
 R0
-R6
+Z14 w1647027956
 8dmem.v
 Fdmem.v
-Z14 L0 10
+Z15 L0 10
 R9
 r1
 !s85 0
@@ -234,8 +234,8 @@ vextend
 R2
 R3
 !i10b 1
-!s100 8D6;8:I`5X9PCk>hKTVHf1
-IYflE91bVkAFjkYVOk=gF63
+!s100 V1ZR91Q]^]L6[dH`7KNAO2
+ImIgOXM2VN^>N:ZznFYXb:0
 R4
 R5
 S1
@@ -243,7 +243,7 @@ R0
 R6
 R7
 R8
-L0 397
+L0 419
 R9
 r1
 !s85 0
@@ -258,8 +258,8 @@ vflopenr
 R2
 R3
 !i10b 1
-!s100 IDG]OQgOAMBDRPNXY?bSh2
-IfW0;a1M9UFRNG7NMQ?lCQ1
+!s100 SnKiAFJ2kA2Bd3oM4AeiD1
+IQk3^[2EXQD0oI@CMRQW4i3
 R4
 R5
 S1
@@ -267,7 +267,7 @@ R0
 R6
 R7
 R8
-L0 422
+L0 444
 R9
 r1
 !s85 0
@@ -282,8 +282,8 @@ vflopr
 R2
 R3
 !i10b 1
-!s100 CdVWnFI`YCd;:Ah1Je2:n1
-IAmKJKY<gZHnD95@Kd1JeX2
+!s100 9BfL4_lKWfOfBmEATQ;L93
+I20P>c^WCjC4FJfL9glT9Y3
 R4
 R5
 S1
@@ -291,7 +291,7 @@ R0
 R6
 R7
 R8
-L0 433
+L0 455
 R9
 r1
 !s85 0
@@ -309,10 +309,10 @@ R3
 IYH9GE=;YXWPXOf?mz2B1M3
 R4
 R0
-R6
+R14
 8imem.v
 Fimem.v
-R14
+R15
 R9
 r1
 !s85 0
@@ -327,8 +327,8 @@ vmux2
 R2
 R3
 !i10b 1
-!s100 1=GX]Mghl4>S9kGQhd<kh0
-IBc3DRPP;UzY9@Q<0X3gXY2
+!s100 24C9D8H<R1[2cc4IA1=533
+I>CFdCk=4d:9<Zn4XhJ2oB0
 R4
 R5
 S1
@@ -336,7 +336,7 @@ R0
 R6
 R7
 R8
-L0 445
+L0 467
 R9
 r1
 !s85 0
@@ -351,8 +351,8 @@ vregfile
 R2
 R3
 !i10b 1
-!s100 g0[3hkWSMUaHNmV52B71j0
-IHASi?f^Ymm]HjWe3Km1LT3
+!s100 m0H=15:AL9EaV?aMEo84o2
+IDn[mO3]hZgZ;iLO=OL[D=0
 R4
 R5
 S1
@@ -360,7 +360,7 @@ R0
 R6
 R7
 R8
-L0 376
+L0 398
 R9
 r1
 !s85 0
@@ -381,10 +381,10 @@ R4
 !s105 tb_sv_unit
 S1
 R0
-R6
+R14
 8tb.sv
 Ftb.sv
-R14
+R15
 R9
 r1
 !s85 0
@@ -405,7 +405,7 @@ R4
 !s105 top_sv_unit
 S1
 R0
-R6
+R14
 8top.sv
 Ftop.sv
 L0 8

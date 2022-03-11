@@ -1,5 +1,5 @@
 # vsim "+nowarn3829" -error 3015 -voptargs="+acc" -l transcript.txt work.testbench 
-# Start time: 13:53:58 on Mar 11,2022
+# Start time: 17:24:43 on Mar 11,2022
 # ** Note: (vsim-3812) Design is being optimized...
 # Loading sv_std.std
 # Loading work.testbench(fast)
@@ -20,5 +20,5 @@
 # Loading work.alu(fast)
 # Loading work.imem(fast)
 # Loading work.dmem(fast)
-# End time: 14:01:58 on Mar 11,2022, Elapsed time: 0:08:00
+# End time: 17:26:03 on Mar 11,2022, Elapsed time: 0:01:20
 # Errors: 0, Warnings: 0

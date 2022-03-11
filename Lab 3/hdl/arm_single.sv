@@ -86,7 +86,9 @@ module arm (input  logic        clk, reset,
    logic [3:0] ALUFlags;
    logic       RegWrite, ALUSrc, MemtoReg, PCSrc;
    logic [2:0] RegSrc;   
-   logic [1:0] ImmSrc, ALUControl;
+   logic [1:0] ImmSrc; 
+   logic [3:0] ALUControl;
+   logic [3:0] CurFlags;
    
    controller c (.clk(clk),
                  .reset(reset),
@@ -100,7 +102,8 @@ module arm (input  logic        clk, reset,
                  .MemWrite(MemWrite),
                  .MemtoReg(MemtoReg),
                  .PCSrc(PCSrc),
-                 .MemStrobe(MemStrobe));
+                 .MemStrobe(MemStrobe),
+                 .CurFlags(CurFlags));
    datapath dp (.clk(clk),
                 .reset(reset),
                 .RegSrc(RegSrc),
@@ -116,7 +119,8 @@ module arm (input  logic        clk, reset,
                 .ALUResult(ALUResult),
                 .WriteData(WriteData),
                 .ReadData(ReadData),
-                .PCReady(PCReady));
+                .PCReady(PCReady),
+                .CurFlags(CurFlags));
    
 endmodule // arm
 
@@ -127,14 +131,15 @@ module controller (input  logic         clk, reset,
                    output logic         RegWrite,
                    output logic [ 1:0]  ImmSrc,
                    output logic         ALUSrc, 
-                   output logic [ 1:0]  ALUControl,
+                   output logic [ 3:0]  ALUControl,
                    output logic         MemWrite, MemtoReg,
                    output logic         PCSrc,
-                   output logic         MemStrobe);
+                   output logic         MemStrobe,
+                   output logic [ 3:0]  CurFlags);
    
    logic [1:0] FlagW;
    logic       PCS, RegW, MemW;
-   
+
    decoder dec (.Op(Instr[27:26]),
                 .Funct(Instr[25:20]),
                 .Rd(Instr[15:12]),
@@ -158,7 +163,8 @@ module controller (input  logic         clk, reset,
                  .MemW(MemW),
                  .PCSrc(PCSrc),
                  .RegWrite(RegWrite),
-                 .MemWrite(MemWrite));
+                 .MemWrite(MemWrite),
+                 .CurFlags(CurFlags));
 endmodule
 
 module decoder (input  logic [1:0] Op,
@@ -167,7 +173,8 @@ module decoder (input  logic [1:0] Op,
                 output logic [1:0] FlagW,
                 output logic       PCS, RegW, MemW,
                 output logic       MemtoReg, ALUSrc,
-                output logic [1:0] ImmSrc, ALUControl,
+                output logic [1:0] ImmSrc, 
+                output logic [3:0] ALUControl,
                 output logic [2:0] RegSrc,
                 output logic       MemStrobe);
    
@@ -201,21 +208,32 @@ module decoder (input  logic [1:0] Op,
      if (ALUOp)
        begin                 // which DP Instr?
          case(Funct[4:1]) 
-           4'b0100: ALUControl = 2'b00; // ADD
-           4'b0010: ALUControl = 2'b01; // SUB
-           4'b0000: ALUControl = 2'b10; // AND
-           4'b1100: ALUControl = 2'b11; // ORR
-           default: ALUControl = 2'bx;  // unimplemented
+           4'b0100: ALUControl = 4'b0000; // ADD  0
+           4'b0010: ALUControl = 4'b0001; // SUB  1
+           4'b0101: ALUControl = 4'b0010; // ADC  2
+           4'b0110: ALUControl = 4'b0011; // SBC  3
+           4'b0000: ALUControl = 4'b0100; // AND  4
+           4'b1101: ALUControl = 4'b0101; // MOV & ASR & LSL & LSR & ROR  5
+           4'b1110: ALUControl = 4'b0110; // BIC  6
+           4'b1011: ALUControl = 4'b0111; // CMN  7
+           4'b1010: ALUControl = 4'b1000; // CMP  8
+           4'b0001: ALUControl = 4'b1001; // EOR  9
+           4'b1111: ALUControl = 4'b1010; // MVN  10
+           4'b1100: ALUControl = 4'b1011; // ORR  11
+           4'b1001: ALUControl = 4'b1100; // TEQ  12
+           4'b1000: ALUControl = 4'b1101; // TST  13
+           default: ALUControl = 4'bx;  // unimplemented
          endcase
          // update flags if S bit is set 
          // (C & V only updated for arith instructions)
+         //FlagW -> [1:0] -> flagW1 = 1 NZ flags saved -> FlagW0 = 1 CV Flags saved
          FlagW[1]      = Funct[0]; // FlagW[1] = S-bit
-         // FlagW[0] = S-bit & (ADD | SUB)
-         FlagW[0]      = Funct[0] & (ALUControl == 2'b00 | ALUControl == 2'b01);
+         // FlagW[0] = S-bit & (ADD | SUB | ADC | SBC | CMP | CMN | MOV  | AND | ORR | EOR | BIC | TEQ | TST)
+         FlagW[0]      = Funct[0]; // Only implemeted 
        end
      else
        begin
-         ALUControl = 2'b00; // add for non-DP instructions
+         ALUControl = 4'b0000; // add for non-DP instructions
          FlagW      = 2'b00; // don't update Flags
        end
    
@@ -229,7 +247,8 @@ module condlogic (input  logic       clk, reset,
                   input  logic [3:0] ALUFlags,
                   input  logic [1:0] FlagW,
                   input  logic       PCS, RegW, MemW,
-                  output logic       PCSrc, RegWrite, MemWrite);
+                  output logic       PCSrc, RegWrite, MemWrite,
+                  output logic [3:0] CurFlags);
    
    logic [1:0] FlagWrite;
    logic [3:0] Flags;
@@ -255,6 +274,7 @@ module condlogic (input  logic       clk, reset,
    assign RegWrite  = RegW  & CondEx;
    assign MemWrite  = MemW  & CondEx;
    assign PCSrc     = PCS   & CondEx;
+   assign CurFlags  = Flags;
    
 endmodule // condlogic
 
@@ -294,9 +314,10 @@ module datapath (input  logic        clk, reset,
                  input  logic        RegWrite,
                  input  logic [ 1:0]  ImmSrc,
                  input  logic        ALUSrc,
-                 input  logic [ 1:0]  ALUControl,
+                 input  logic [ 3:0]  ALUControl,
                  input  logic        MemtoReg,
                  input  logic        PCSrc,
+                 input  logic [ 3:0] CurFlags, 
                  output logic [ 3:0]  ALUFlags,
                  output logic [31:0] PC,
                  input  logic [31:0] Instr,
@@ -368,6 +389,7 @@ module datapath (input  logic        clk, reset,
                         .y(SrcB));
    alu         alu (.a(SrcA),
                     .b(SrcB),
+                    .flags(CurFlags),
                     .ALUControl(ALUControl),
                     .Result(ALUResult),
                     .ALUFlags(ALUFlags));
@@ -452,7 +474,8 @@ module mux2 #(parameter WIDTH = 8)
 endmodule // mux2
 
 module alu (input  logic [31:0] a, b,
-            input  logic [ 1:0] ALUControl,
+            input  logic [ 3:0] ALUControl,
+            input  logic [ 3:0] flags,
             output logic [31:0] Result,
             output logic [ 3:0] ALUFlags);
    
@@ -460,14 +483,15 @@ module alu (input  logic [31:0] a, b,
    logic [31:0] condinvb;
    logic [32:0] sum;
    
-   assign condinvb = ALUControl[0] ? ~b : b;
-   assign sum = a + condinvb + ALUControl[0];
+   assign c = ALUControl[1] & ~ALUControl[3:2] ? flags[1] : 0;
+   assign condinvb = ALUControl[0] & ~ALUControl[3:2] ? ~b : b;
+   assign sum = a + condinvb + ALUControl[2] + c;
 
    always_comb
-     casex (ALUControl[1:0])
-       2'b0?:  Result = sum;
-       2'b10:  Result = a & b;
-       2'b11:  Result = a | b;
+     casex (ALUControl[3:0])
+       4'b00??:  Result = sum;
+       4'b10:  Result = a & b;
+       4'b11:  Result = a | b;
        default: Result = 32'bx;
      endcase
 
