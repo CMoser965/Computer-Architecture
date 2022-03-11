@@ -124,7 +124,21 @@ int data_process(char* i_) {
   int CC = bchar_to_int(d_cond);
   printf("Opcode = %s\n Rn = %d\n Rd = %d\n Operand2 = %s\n I = %d\n S = %d\n COND = %s\n", d_opcode, Rn, Rd, byte_to_binary12(Operand2), I, S, byte_to_binary4(CC));
   printf("\n");
-
+  
+  // use for LSL and LSR case
+  char shamt5[6]; char sh[3]; char rm[5];
+  if(!I) {
+    shamt5[5] = '\0'; sh[2] = '\0'; rm[4] = '\0';
+    for(int i = 0; i < 6; i++) {
+      if(i<2) 
+        sh[i] = operand2[i+5];
+      if(i<4)
+        rm[i] = operand2[i+8];
+      shamt5[i] = operand2[i];
+    }
+    printf("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
+  }
+int Rm = bchar_to_int(rm);
   /* Example - use and replicate */
   if(!strcmp(d_opcode,"0100")) {
     printf("--- This is an ADD instruction. \n");
@@ -133,6 +147,96 @@ int data_process(char* i_) {
   }	
 
   /* Add other data instructions here */ 
+  else if(!strcmp(d_opcode, "0000")) {
+    printf("--- This is an AND instruction. \n");
+    AND(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+
+  else if(!strcmp(d_opcode, "0001")) {
+    printf("--- This is an EOR instruction. \n");
+    AND(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+
+  else if(!strcmp(d_opcode, "0010")) {
+    printf("--- This is a SUB instruction. \n");
+    SUB(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+
+  else if(!strcmp(d_opcode, "0011")) {
+    printf("--- This is an RSB instruction. \n");
+    RSB(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+
+  else if(!strcmp(d_opcode, "0101")) {
+    printf("--- This is an ADC instruction. \n");
+    ADC(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+
+  else if(!strcmp(d_opcode, "0110")) {
+    printf("--- This is an SBC instruction. \n");
+    SBC(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+
+  else if(!strcmp(d_opcode, "0111")) {
+    printf("--- This is an RSC instruction. \n");
+    RSC(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+  
+  else if(!strcmp(d_opcode, "1000")) {
+    printf("--- This is a TST instruction. \n");
+    TST(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+
+  else if(!strcmp(d_opcode, "1001")) {
+    printf("--- This is a TEQ instruction. \n");
+    TEQ(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+
+  else if(!strcmp(d_opcode, "1010")) {
+    printf("--- This is a CMP instruction. \n");
+    CMP(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+
+  else if(!strcmp(d_opcode, "1011")) {
+    printf("--- This is a CMN instruction. \n");
+    CMN(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+
+  else if(!strcmp(d_opcode, "1100")) {
+    printf("--- This is an ORR instruction. \n");
+    ORR(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+  
+  // Takes care of LSL LSR ASR and ROR
+  else if(!strcmp(d_opcode, "1101")) {
+    printf("--- This is an MOV instruction. \n");
+      MOV(Rd, Rn, Operand2, I, S, CC);
+      return 0;
+  }
+
+  else if(!strcmp(d_opcode, "1110")) {
+    printf("--- This is a BIC instruction. \n");
+    BIC(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
+
+  else if(!strcmp(d_opcode, "1111")) {
+    printf("--- This is an MVN instruction. \n");
+    MVN(Rd, Rn, Operand2, I, S, CC);
+    return 0;
+  }
 
   return 1;	
 }
@@ -142,9 +246,30 @@ int branch_process(char* i_) {
   /* This function execute branch instruction */
 
   /* Add branch instructions here */ 
-
+  char d_cond[5];
+  d_cond[0] = i_[0];
+  d_cond[1] = i_[1];
+  d_cond[2] = i_[2];
+  d_cond[3] = i_[3];
+  d_cond[4] = '\0';
+  int L;
+  L = i_[7] - '0';
+  char imm24[25];
+  imm24[24] = '\0';
+  for(int i = 0; i < 24; i++) {
+    imm24[i] = i_[8+i];
+  }
+  int IM = bchar_to_int(imm24);
+  printf("Cond = %s\n 1L = 1%d\n imm24 = %s\n", d_cond, L, imm24);
+  if(!L) {
+    printf("--- This is a Branch instruction. \n");
+    B(IM);
+  }
+  else {
+    printf("--- This is a Branch with Link Instruction. \n");
+    BL(IM);
+  }
   return 1;
-
 }
 
 int mul_process(char* i_) {
@@ -152,24 +277,113 @@ int mul_process(char* i_) {
   /* This function execute multiply instruction */
 
   /* Add multiply instructions here */ 
-
+  char d_opcode[4]; 
+  d_opcode[1] = i_[8]; 
+  d_opcode[2] = i_[9]; 
+  d_opcode[3] = i_[10]; 
+  d_opcode[4] = '\0';
+  char d_cond[5];
+  d_cond[0] = i_[0]; 
+  d_cond[1] = i_[1]; 
+  d_cond[2] = i_[2]; 
+  d_cond[3] = i_[3]; 
+  d_cond[4] = '\0';
+  int S = i_[11] - '0';
+  char Rd[5]; Rd[4] = '\0';
+  char Ra[5]; Ra[4] = '\0';
+  char Rm[5]; Rm[4] = '\0';
+  char Rn[5]; Rn[4] = '\0';
+  for(int i = 0; i < 4; i++) {
+    Rd[i] = i_[12+i];
+    Ra[i] = i_[16+i];
+    Rm[i] = i_[20+i];
+    Rn[i] = i_[28+i];
+  }
+  printf("opcode = %s\n condition = %s\n Rd = %s\n Ra = %s\n Rm = %s\n Rn = %s\n", d_opcode, d_cond, Rd, Ra, Rm, Rn);
+  /* function passes */
+  // if(!strcmp(d_opcode, "000")) {
+  //   printf("--- This is a MUL instruction. \n");
+  //   MUL(Rd, Rn, Rm);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "001")) {
+  //   printf("--- This is an MLA instruction. \n");
+  //   MLA(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "100")){
+  //   printf("--- This is a UMULL instruction. \n");
+  //   UMULL(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "101")){
+  //   printf("--- This is a UMLAL instruction. \n");
+  //   UMLAL(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "110")){
+  //   SMULL(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } else if(!strcmp(d_opcode, "111")){
+  //   SMLAL(Rd, Rn, Rm, Ra);
+  //   return 0;
+  // } 
   return 1;
-
 }
 
 int transfer_process(char* i_) {
 
-  /* This function execute memory instruction */
-
+  /* This function execute memory instruction */ 
+  char d_cond[5];
+  d_cond[0] = i_[0];
+  d_cond[1] = i_[1];
+  d_cond[2] = i_[2];
+  d_cond[3] = i_[3];
+  d_cond[4] = '\0';
+  int I, P, U, B, W, L;
+  I = i_[6] - '0'; P = i_[7] - '0';
+  U = i_[8] - '0'; B = i_[9] - '0';
+  W = i_[10] - '0'; L = i_[11] - '0';
+  char rn[5]; char rd[5];
+  rn[4] = '\0'; rd[4] = '\0';
+  for(int i = 0; i < 4; i++) {
+    rn[i] = i_[12+i]; rd[i] = i_[16+i];
+  }
+  char src2[13];
+  src2[12] = '\0';
+  for(int i = 0; i < 12; i++) {
+    src2[i] = i_[20+i];
+  }
+  char shamt5[6]; char sh[3]; char rm[5];
+  printf("I = %d\n", I);
+  if(I) {
+    shamt5[5] = '\0'; sh[2] = '\0'; rm[4] = '\0';
+    for(int i = 0; i < 6; i++) {
+      if(i<2) 
+        sh[i] = src2[i+5];
+      if(i<4)
+        rm[i] = src2[i+8];
+      shamt5[i] = src2[i];
+    }
+    printf("shamt5 = %s\n sh = %s\n Rm = %s\n", shamt5, sh, rm);
+  } else {
+    printf("imm12 = %s\n", src2);
+  }
+  int imm12 = bchar_to_int(src2);
+  int RD = bchar_to_int(rd);
+  int RN = bchar_to_int(rn);
   /* Add memory instructions here */ 
-
+  if(!B && !L)
+    STR(RD, RN, imm12, I);
+  else if(!B && L)
+    LDR(RD, RN, imm12, I);
+  else if(B && !L)
+    STRB(RD, RN, imm12, I);
+  else if(B && L)
+    LDRB(RD, RN, imm12, I);
   return 1;
 
 }
 
 int interruption_process(char* i_) {
 
-  SWI(i_);
+  SWI();
   RUN_BIT = 0;
   return 0;
 
