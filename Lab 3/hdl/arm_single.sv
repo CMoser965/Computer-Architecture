@@ -489,9 +489,19 @@ module alu (input  logic [31:0] a, b,
 
    always_comb
      casex (ALUControl[3:0])
-       4'b00??:  Result = sum;
-       4'b10:  Result = a & b;
-       4'b11:  Result = a | b;
+       4'b00??:  Result = sum; // ADD & SUB & ADC & SBC ??
+       //4'b0010:  Result = ; // ADC
+       //4'b0011:  Result = ; // SBC
+       4'b0100:  Result = a & b; // AND
+       4'b0101:  Result = ; // MOV & ASR & LsL & LSR & ROR
+       4'b0110:  Result = a & ~b; // BIC
+       4'b0111:  Result = ; // CMN
+       4'b1000:  Result = ; // CMP
+       4'b1001:  Result = a ^ b; // EOR ??
+       4'b1010:  Result = ~a; // MVN
+       4'b1011:  Result = a | b; // ORR
+       4'b1100:  Result = ; // TEQ
+       4'b1101:  Result = ; // TST
        default: Result = 32'bx;
      endcase
 
