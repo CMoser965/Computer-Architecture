@@ -89,6 +89,10 @@ module arm (input  logic        clk, reset,
    logic [1:0] ImmSrc; 
    logic [3:0] ALUControl;
    logic [3:0] CurFlags;
+   logic [31:0] instr;
+   //logic        compareOnly;
+
+   assign instr = Instr;
    
    controller c (.clk(clk),
                  .reset(reset),
@@ -103,7 +107,9 @@ module arm (input  logic        clk, reset,
                  .MemtoReg(MemtoReg),
                  .PCSrc(PCSrc),
                  .MemStrobe(MemStrobe),
-                 .CurFlags(CurFlags));
+                 .CurFlags(CurFlags),
+                 .I(I),
+                 .compareOnly(compareOnly));
    datapath dp (.clk(clk),
                 .reset(reset),
                 .RegSrc(RegSrc),
@@ -120,7 +126,10 @@ module arm (input  logic        clk, reset,
                 .WriteData(WriteData),
                 .ReadData(ReadData),
                 .PCReady(PCReady),
-                .CurFlags(CurFlags));
+                .CurFlags(CurFlags),
+                .I(I),
+                .instr(instr),
+                .compareOnly(compareOnly));
    
 endmodule // arm
 
@@ -135,7 +144,9 @@ module controller (input  logic         clk, reset,
                    output logic         MemWrite, MemtoReg,
                    output logic         PCSrc,
                    output logic         MemStrobe,
-                   output logic [ 3:0]  CurFlags);
+                   output logic [ 3:0]  CurFlags,
+                   output logic         I,
+                   input  logic        compareOnly);
    
    logic [1:0] FlagW;
    logic       PCS, RegW, MemW;
@@ -152,7 +163,8 @@ module controller (input  logic         clk, reset,
                 .ImmSrc(ImmSrc),
                 .RegSrc(RegSrc),
                 .ALUControl(ALUControl),
-                .MemStrobe(MemStrobe));
+                .MemStrobe(MemStrobe),
+                .I(I));
    condlogic cl (.clk(clk),
                  .reset(reset),
                  .Cond(Instr[31:28]),
@@ -164,7 +176,8 @@ module controller (input  logic         clk, reset,
                  .PCSrc(PCSrc),
                  .RegWrite(RegWrite),
                  .MemWrite(MemWrite),
-                 .CurFlags(CurFlags));
+                 .CurFlags(CurFlags),
+                 .compareOnly(compareOnly));
 endmodule
 
 module decoder (input  logic [1:0] Op,
@@ -176,7 +189,8 @@ module decoder (input  logic [1:0] Op,
                 output logic [1:0] ImmSrc, 
                 output logic [3:0] ALUControl,
                 output logic [2:0] RegSrc,
-                output logic       MemStrobe);
+                output logic       MemStrobe,
+                output logic       I);
    
    logic [11:0] controls;
    logic        Branch, ALUOp;
@@ -240,6 +254,7 @@ module decoder (input  logic [1:0] Op,
    // PC Logic
    assign PCS  = ((Rd == 4'b1111) & RegW) | Branch;
    
+   assign I         = Funct[5];
 endmodule // decoder
 
 module condlogic (input  logic       clk, reset,
@@ -248,7 +263,8 @@ module condlogic (input  logic       clk, reset,
                   input  logic [1:0] FlagW,
                   input  logic       PCS, RegW, MemW,
                   output logic       PCSrc, RegWrite, MemWrite,
-                  output logic [3:0] CurFlags);
+                  output logic [3:0] CurFlags,
+                  input  logic        compareOnly);
    
    logic [1:0] FlagWrite;
    logic [3:0] Flags;
@@ -271,7 +287,7 @@ module condlogic (input  logic       clk, reset,
                  .Flags(Flags),
                  .CondEx(CondEx));
    assign FlagWrite = FlagW & {2{CondEx}};
-   assign RegWrite  = RegW  & CondEx;
+   assign RegWrite  = RegW  & CondEx & ~compareOnly;
    assign MemWrite  = MemW  & CondEx;
    assign PCSrc     = PCS   & CondEx;
    assign CurFlags  = Flags;
@@ -323,7 +339,10 @@ module datapath (input  logic        clk, reset,
                  input  logic [31:0] Instr,
                  output logic [31:0] ALUResult, WriteData,
                  input  logic [31:0] ReadData,
-                 input  logic        PCReady);
+                 input  logic        PCReady,
+                 input logic         I,
+                 input logic  [31:0] instr,
+                 output logic         compareOnly);
    
    logic [31:0] PCNext, PCPlus4, PCPlus8;
    logic [31:0] ExtImm, SrcA, SrcB, Result;
@@ -392,7 +411,10 @@ module datapath (input  logic        clk, reset,
                     .flags(CurFlags),
                     .ALUControl(ALUControl),
                     .Result(ALUResult),
-                    .ALUFlags(ALUFlags));
+                    .ALUFlags(ALUFlags),
+                    .I(I),
+                    .instr(instr),
+                    .compareOnly(compareOnly));
 endmodule // datapath
 
 module regfile (input  logic        clk, 
@@ -476,41 +498,76 @@ endmodule // mux2
 module alu (input  logic [31:0] a, b,
             input  logic [ 3:0] ALUControl,
             input  logic [ 3:0] flags,
+            input  logic I,
+            input logic [31:0] instr,
             output logic [31:0] Result,
-            output logic [ 3:0] ALUFlags);
+            output logic [ 3:0] ALUFlags,
+            output logic compareOnly);
    
    logic        neg, zero, carry, overflow;
    logic [31:0] condinvb;
    logic [32:0] sum;
+
+   //logic compareOnly;
+   logic [32:0] fakeReg;
    
-   assign c = ALUControl[1] & ~ALUControl[3:2] ? flags[1] : 0;
-   assign condinvb = ALUControl[0] & ~ALUControl[3:2] ? ~b : b;
-   assign sum = a + condinvb + ALUControl[2] + c;
+   assign c = (ALUControl[1] & ~ALUControl[3] & ~ALUControl[2]) ? flags[1] : 0; // set Carry if required for ADC/SBC case
+   assign condinvb = (ALUControl[0] & ~ALUControl[3] & ~ALUControl[2]) ? ~b : b; // invert operand for sub case
+   assign sum = a + condinvb + ALUControl[0] + c; // sum for all add/sub cases
+  
 
    always_comb
+   begin
+   compareOnly = 0;
      casex (ALUControl[3:0])
        4'b00??:  Result = sum; // ADD & SUB & ADC & SBC ??
        //4'b0010:  Result = ; // ADC
        //4'b0011:  Result = ; // SBC
        4'b0100:  Result = a & b; // AND
-       4'b0101:  Result = ; // MOV & ASR & LsL & LSR & ROR
+       4'b0101:  begin // MOV & ASR & LSL & LSR & ROR
+                      if(I) 
+                        Result = b;
+                      else begin
+                        casex(b[6:5])
+                          2'b00: Result = instr[3:0] << instr[11:7];
+                          2'b01: Result = instr[3:0] >> instr[11:7];
+                          2'b10: Result = instr[3:0] >>> instr[11:7];
+                          2'b11: Result = (instr[3:0] >> instr[11:7]) | (instr[3:0] << (6'b100000 - instr[11:7]));
+                          default: Result = 32'bx;
+                        endcase
+                      end
+                 end
        4'b0110:  Result = a & ~b; // BIC
-       4'b0111:  Result = ; // CMN
-       4'b1000:  Result = ; // CMP
+       4'b0111:  begin            // CMN
+                      assign fakeReg = a + b; 
+                      compareOnly = 1; 
+                end
+       4'b1000:  begin            // CMP
+                      assign fakeReg = a - b; 
+                      compareOnly = 1; 
+                end 
        4'b1001:  Result = a ^ b; // EOR ??
        4'b1010:  Result = ~a; // MVN
        4'b1011:  Result = a | b; // ORR
-       4'b1100:  Result = ; // TEQ
-       4'b1101:  Result = ; // TST
+       4'b1100:  begin // TEQ
+                      assign fakeReg = a ^ b;
+                      compareOnly = 1;
+                 end
+       4'b1101:  begin // TST
+                      assign fakeReg = a & b;
+                      compareOnly = 1;
+                 end
        default: Result = 32'bx;
      endcase
+   end
 
-   assign neg      = Result[31];
-   assign zero     = (Result == 32'b0);
-   assign carry    = (ALUControl[1] == 1'b0) & sum[32];
-   assign overflow = (ALUControl[1] == 1'b0) & 
+   assign neg      = compareOnly ? fakeReg[31] : Result[31];
+   assign zero     = compareOnly ? (fakeReg == 32'b0) : (Result == 32'b0);
+   assign carry    = compareOnly ? (ALUControl[1] == 1'b0) & fakeReg[32] : (ALUControl[1] == 1'b0) & sum[32];
+   assign overflow = compareOnly ? (ALUControl[1] == 1'b0) & 
+                     ~(a[31] ^ b[31] ^ ALUControl[0]) & 
+                     (a[31] ^ fakeReg[31]) : (ALUControl[1] == 1'b0) & 
                      ~(a[31] ^ b[31] ^ ALUControl[0]) & 
                      (a[31] ^ sum[31]); 
-   assign ALUFlags = {neg, zero, carry, overflow};
-   
-endmodule // alu
+   assign ALUFlags = {neg, zero, carry, overflow}; 
+   endmodule // alu

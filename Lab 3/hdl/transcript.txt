@@ -1,5 +1,5 @@
 # vsim "+nowarn3829" -error 3015 -voptargs="+acc" -l transcript.txt work.testbench 
-# Start time: 17:24:43 on Mar 11,2022
+# Start time: 16:50:31 on Mar 25,2022
 # ** Note: (vsim-3812) Design is being optimized...
 # Loading sv_std.std
 # Loading work.testbench(fast)
@@ -20,5 +20,12 @@
 # Loading work.alu(fast)
 # Loading work.imem(fast)
 # Loading work.dmem(fast)
-# End time: 17:26:03 on Mar 11,2022, Elapsed time: 0:01:20
-# Errors: 0, Warnings: 0
+# ** Error: (vsim-7) Failed to open mem file "./additest.dat" in read mode.
+# No such file or directory. (errno = ENOENT)
+# Error in macro ./arm_single.do line 38
+# ** Error: (vsim-7) Failed to open mem file "./additest.dat" in read mode.
+# No such file or directory. (errno = ENOENT)
+#     while executing
+# "mem load -startaddress 0 -i ${MEMORY_FILE} -format hex /testbench/dut/imem/RAM"
+# End time: 16:51:19 on Mar 25,2022, Elapsed time: 0:00:48
+# Errors: 2, Warnings: 0
