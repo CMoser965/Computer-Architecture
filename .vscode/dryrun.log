@@ -1,6 +1,4 @@
-make --dry-run --always-make --keep-going --print-directory
-make: Entering directory '/mnt/c/Users/mathm/OneDrive/Documents/Spring2022/ECEN4243_comp_arch/Computer-Architecture'
-make: Leaving directory '/mnt/c/Users/mathm/OneDrive/Documents/Spring2022/ECEN4243_comp_arch/Computer-Architecture'
- 
-make: *** No targets specified and no makefile found.  Stop.
+make.exe --dry-run --keep-going --print-directory
+'make.exe' is not recognized as an internal or external command,
+operable program or batch file.
  
