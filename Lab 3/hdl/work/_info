@@ -9,10 +9,10 @@ z2
 cModel Technology
 Z0 dC:/Users/icook/Documents/Repo/Lab 3/hdl
 T_opt
-Z1 !s110 1648245031
-VBC?dSNQN7lo1_=GRQ0>AM3
+Z1 !s110 1648842099
+V`_nnNbbhL@4iKXcKAXiFA1
 04 9 4 work testbench fast 0
-=1-b07b252c50e0-623e3927-282-180
+=1-b07b252c50e0-62475573-1c4-21f4
 o-quiet -auto_acc_if_foreign -work work -error 3015 +acc
 Z2 tCvgOpt 0
 n@_opt
@@ -27,7 +27,7 @@ Z4 VDg1SIo80bB@j0V0VzS_@n1
 Z5 !s105 arm_single_sv_unit
 S1
 R0
-Z6 w1648244793
+Z6 w1648245085
 Z7 8arm_single.sv
 Z8 Farm_single.sv
 L0 458
@@ -35,7 +35,7 @@ Z9 OL;L;10.7f;67
 r1
 !s85 0
 31
-Z10 !s108 1648245031.000000
+Z10 !s108 1648842099.000000
 Z11 !s107 tb.sv|top.sv|arm_single.sv|dmem.v|imem.v|
 Z12 !s90 -reportprogress|300|imem.v|dmem.v|arm_single.sv|top.sv|tb.sv|
 !i113 0

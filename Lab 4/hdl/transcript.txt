@@ -1,24 +1,29 @@
 # vsim "+nowarn3829" -error 3015 -voptargs="+acc" -l transcript.txt work.testbench 
-# Start time: 14:41:39 on Apr 01,2022
+# Start time: 14:25:49 on Apr 01,2022
 # ** Note: (vsim-3812) Design is being optimized...
 # Loading sv_std.std
 # Loading work.testbench(fast)
 # Loading work.top(fast)
 # Loading work.arm(fast)
 # Loading work.controller(fast)
-# Loading work.decoder(fast)
-# Loading work.condlogic(fast)
+# Loading work.flopenrc(fast)
 # Loading work.flopenr(fast)
-# Loading work.condcheck(fast)
+# Loading work.flopenr(fast__1)
+# Loading work.conditional(fast)
+# Loading work.flopenr(fast__2)
 # Loading work.datapath(fast)
 # Loading work.mux2(fast)
-# Loading work.flopenr(fast__1)
+# Loading work.flopenr(fast__3)
 # Loading work.adder(fast)
+# Loading work.flopenrc(fast__1)
 # Loading work.mux2(fast__1)
 # Loading work.regfile(fast)
 # Loading work.extend(fast)
+# Loading work.mux3(fast)
 # Loading work.alu(fast)
+# Loading work.eqcmp(fast)
+# Loading work.hazard(fast)
 # Loading work.imem(fast)
 # Loading work.dmem(fast)
-# End time: 14:46:19 on Apr 01,2022, Elapsed time: 0:04:40
+# End time: 14:46:23 on Apr 01,2022, Elapsed time: 0:20:34
 # Errors: 0, Warnings: 0

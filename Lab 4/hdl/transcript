@@ -11,31 +11,35 @@
 # //  is prohibited from disclosure under the Trade Secrets Act,
 # //  18 U.S.C. Section 1905.
 # //
-# do ./arm_single.do
+# do {.\arm_pipelined.do}
 # ./memfile.dat
 # Model Technology ModelSim SE-64 vlog 10.7f Compiler 2020.03 Mar 24 2020
-# Start time: 14:41:39 on Apr 01,2022
-# vlog -reportprogress 300 imem.v dmem.v arm_single.sv top.sv tb.sv 
+# Start time: 14:25:49 on Apr 01,2022
+# vlog -reportprogress 300 imem.v dmem.v arm_pipelined.sv top.sv tb.sv 
 # -- Compiling module imem
 # -- Compiling module dmem
 # -- Compiling module arm
 # -- Compiling module controller
-# -- Compiling module decoder
-# -- Compiling module condlogic
-# -- Compiling module condcheck
+# -- Compiling module conditional
 # -- Compiling module datapath
+# -- Compiling module hazard
 # -- Compiling module regfile
 # -- Compiling module extend
+# -- Compiling module alu
 # -- Compiling module adder
 # -- Compiling module flopenr
 # -- Compiling module flopr
+# -- Compiling module flopenrc
+# -- Compiling module floprc
 # -- Compiling module mux2
-# -- Compiling module alu
+# -- Compiling module mux3
+# -- Compiling module eqcmp
 # -- Compiling module top
 # -- Compiling module testbench
 # 
 # Top level modules:
 # 	flopr
+# 	floprc
 # 	testbench
-# End time: 14:41:39 on Apr 01,2022, Elapsed time: 0:00:00
+# End time: 14:25:49 on Apr 01,2022, Elapsed time: 0:00:00
 # Errors: 0, Warnings: 0

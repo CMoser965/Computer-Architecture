@@ -11,5 +11,17 @@
 # //  is prohibited from disclosure under the Trade Secrets Act,
 # //  18 U.S.C. Section 1905.
 # //
-# arm_single.do
-# invalid command name "arm_single.do"
+# do ./hdl/arm_single.do
+# ./memfile.dat
+# Model Technology ModelSim SE-64 vlog 10.7f Compiler 2020.03 Mar 24 2020
+# Start time: 14:28:54 on Apr 01,2022
+# vlog -reportprogress 300 imem.v dmem.v arm_single.sv top.sv tb.sv 
+# ** Error: (vlog-7) Failed to open design unit file "imem.v" in read mode.
+# No such file or directory. (errno = ENOENT)
+# End time: 14:28:54 on Apr 01,2022, Elapsed time: 0:00:00
+# Errors: 1, Warnings: 0
+# ** Error: C:/modeltech64_10.7f/win64/vlog failed.
+# Error in macro ././hdl/arm_single.do line 32
+# C:/modeltech64_10.7f/win64/vlog failed.
+#     while executing
+# "vlog imem.v dmem.v arm_single.sv top.sv tb.sv"

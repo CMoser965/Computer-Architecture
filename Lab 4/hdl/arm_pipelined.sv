@@ -82,9 +82,10 @@ module arm (input  logic        clk, reset,
             input  logic [31:0] ReadDataM,
             output logic        MemStrobe,
             input  logic        PCReady);
-   
+   logic [31:0] instr;
    logic [2:0]  RegSrcD;
-   logic [1:0]  ImmSrcD, ALUControlE;
+   logic [1:0]  ImmSrcD;
+   logic [3:0]  ALUControlE;
    logic        ALUSrcE, BranchTakenE, MemtoRegW,
                 PCSrcW, RegWriteW;
    logic [3:0]  ALUFlagsE;
@@ -115,7 +116,9 @@ module arm (input  logic        clk, reset,
                  .PCWrPendingF(PCWrPendingF),
                  .FlushE(FlushE),
                  .MemStrobeM(MemStrobe),
-                 .MemSysReady(PCReady));
+                 .MemSysReady(PCReady),
+                 .I(I),
+                 .compareOnly(compareOnly));
    datapath dp (.clk(clk),
                 .reset(reset),
                 .RegSrcD(RegSrcD),
@@ -144,7 +147,10 @@ module arm (input  logic        clk, reset,
                 .StallF(StallF),
                 .StallD(StallD),
                 .FlushD(FlushD),
-                .MemSysReady(PCReady));
+                .MemSysReady(PCReady),
+                .I(I),
+                .instr(instr),
+                .compareOnly(compareOnly));
    hazard h (.clk(clk),
              .reset(reset),
              .Match_1E_M(Match_1E_M),
@@ -173,7 +179,7 @@ module controller (input  logic         clk, reset,
                    output logic [2:0]   RegSrcD, 
                    output logic [1:0]   ImmSrcD, 
                    output logic         ALUSrcE, BranchTakenE,
-                   output logic [1:0]   ALUControlE,
+                   output logic [3:0]   ALUControlE,
                    output logic         MemWriteM,
                    output logic         MemtoRegW, PCSrcW, RegWriteW,
                    // hazard interface
@@ -181,11 +187,13 @@ module controller (input  logic         clk, reset,
                    output logic         PCWrPendingF,
                    input  logic         FlushE,
                    output logic         MemStrobeM,
-                   input  logic         MemSysReady);
+                   input  logic         MemSysReady,
+                   output logic         I,
+                   input  logic        compareOnly);
 
    logic [11:0] controlsD;
    logic        CondExE, ALUOpD;
-   logic [1:0]  ALUControlD;
+   logic [3:0]  ALUControlD;
    logic        ALUSrcD;
    logic        MemtoRegD, MemtoRegM;
    logic        RegWriteD, RegWriteE, RegWriteGatedE;
@@ -212,27 +220,60 @@ module controller (input  logic         clk, reset,
    assign {RegSrcD, ImmSrcD, ALUSrcD, MemtoRegD, 
            RegWriteD, MemWriteD, BranchD, ALUOpD, MemStrobeD} = controlsD; 
    
-   always_comb
-     if (ALUOpD) 
-       begin                 // which Data-processing Instr?
+  //  always_comb
+  //    if (ALUOpD) 
+  //      begin                 // which Data-processing Instr?
+  //        case(InstrD[24:21]) 
+  //          4'b0100: ALUControlD = 2'b00; // ADD
+  //          4'b0010: ALUControlD = 2'b01; // SUB
+  //          4'b0000: ALUControlD = 2'b10; // AND
+  //          4'b1100: ALUControlD = 2'b11; // ORR
+  //          default: ALUControlD = 2'bx;  // unimplemented
+  //        endcase
+  //        FlagWriteD[1]   = InstrD[20];   // update N/Z Flags if S bit is set
+  //        FlagWriteD[0]   = InstrD[20] &
+  //                          (ALUControlD == 2'b00 | ALUControlD == 2'b01);
+  //      end 
+  //    else 
+  //      begin
+  //        ALUControlD     = 2'b00;        // perform addition for non-dp instr
+  //        FlagWriteD      = 2'b00;        // don't update Flags
+  //      end
+  always_comb
+     if (ALUOpD)
+       begin                 // which DP Instr?
          case(InstrD[24:21]) 
-           4'b0100: ALUControlD = 2'b00; // ADD
-           4'b0010: ALUControlD = 2'b01; // SUB
-           4'b0000: ALUControlD = 2'b10; // AND
-           4'b1100: ALUControlD = 2'b11; // ORR
-           default: ALUControlD = 2'bx;  // unimplemented
+           4'b0100: ALUControlD = 4'b0000; // ADD  0
+           4'b0010: ALUControlD = 4'b0001; // SUB  1
+           4'b0101: ALUControlD = 4'b0010; // ADC  2
+           4'b0110: ALUControlD = 4'b0011; // SBC  3
+           4'b0000: ALUControlD = 4'b0100; // AND  4
+           4'b1101: ALUControlD = 4'b0101; // MOV & ASR & LSL & LSR & ROR  5
+           4'b1110: ALUControlD = 4'b0110; // BIC  6
+           4'b1011: ALUControlD = 4'b0111; // CMN  7
+           4'b1010: ALUControlD = 4'b1000; // CMP  8
+           4'b0001: ALUControlD = 4'b1001; // EOR  9
+           4'b1111: ALUControlD = 4'b1010; // MVN  10
+           4'b1100: ALUControlD = 4'b1011; // ORR  11
+           4'b1001: ALUControlD = 4'b1100; // TEQ  12
+           4'b1000: ALUControlD = 4'b1101; // TST  13
+           default: ALUControlD = 4'bx;  // unimplemented
          endcase
-         FlagWriteD[1]   = InstrD[20];   // update N/Z Flags if S bit is set
-         FlagWriteD[0]   = InstrD[20] &
-                           (ALUControlD == 2'b00 | ALUControlD == 2'b01);
-       end 
-     else 
+         // update flags if S bit is set 
+         // (C & V only updated for arith instructions)
+         //FlagW -> [1:0] -> flagW1 = 1 NZ flags saved -> FlagW0 = 1 CV Flags saved
+         FlagWriteD[1]      = InstrD[20]; // FlagW[1] = S-bit
+         // FlagW[0] = S-bit & (ADD | SUB | ADC | SBC | CMP | CMN | MOV  | AND | ORR | EOR | BIC | TEQ | TST)
+         FlagWriteD[0]      = InstrD[20]; // Only implemeted 
+       end
+     else
        begin
-         ALUControlD     = 2'b00;        // perform addition for non-dp instr
-         FlagWriteD      = 2'b00;        // don't update Flags
+         ALUControlD = 4'b0000; // add for non-DP instructions
+         FlagWriteD  = 2'b00; // don't update Flags
        end
 
    assign PCSrcD = (((InstrD[15:12] == 4'b1111) & RegWriteD) | BranchD);
+   assign I         = InstrD[25];
    
    // Execute stage
    flopenrc #(8) flushedregsE(.clk(clk),
@@ -243,7 +284,7 @@ module controller (input  logic         clk, reset,
                                 RegWriteD, PCSrcD, MemtoRegD, MemStrobeD}),
                             .q({FlagWriteE, BranchE, MemWriteE, 
                                 RegWriteE, PCSrcE, MemtoRegE, MemStrobeE}));
-   flopenr #(3)  regsE(.clk(clk),
+   flopenr #(5)  regsE(.clk(clk),
                      .reset(reset),
                      .en(MemSysReady),
                      .d({ALUSrcD, ALUControlD}),
@@ -268,7 +309,7 @@ module controller (input  logic         clk, reset,
                      .CondEx(CondExE),
                      .FlagsNext(FlagsNextE));
    assign BranchTakenE    = BranchE & CondExE;
-   assign RegWriteGatedE  = RegWriteE & CondExE;
+   assign RegWriteGatedE  = RegWriteE & CondExE & ~compareOnly;
    assign MemWriteGatedE  = MemWriteE & CondExE;
    assign PCSrcGatedE     = PCSrcE & CondExE;
    assign MemStrobeGatedE = MemStrobeE & CondExE;
@@ -337,7 +378,7 @@ module datapath (input  logic        clk, reset,
                  input  logic [2:0]  RegSrcD,
                  input  logic [1:0]  ImmSrcD,
                  input  logic        ALUSrcE, BranchTakenE,
-                 input  logic [1:0]  ALUControlE, 
+                 input  logic [3:0]  ALUControlE, 
                  input  logic        MemtoRegW, PCSrcW, RegWriteW,
                  output logic [31:0] PCF,
                  input  logic [31:0] InstrF,
@@ -350,7 +391,10 @@ module datapath (input  logic        clk, reset,
                  output logic        Match_2E_M, Match_2E_W, Match_12D_E,
                  input  logic [1:0]  ForwardAE, ForwardBE,
                  input  logic        StallF, StallD, FlushD,
-                 input  logic        MemSysReady);
+                 input  logic        MemSysReady,
+                 input logic         I,
+                 input logic  [31:0] instr,
+                 output logic         compareOnly);
    
    logic [31:0] PCPlus4F, PCnext1F, PCnextF;
    logic [31:0] PCPlus4D, PCPlus4E, PCPlus4M, PCPlus4W;   
@@ -484,7 +528,10 @@ module datapath (input  logic        clk, reset,
                     .b(SrcBE),
                     .ALUControl(ALUControlE),
                     .Result(ALUResultE),
-                    .Flags(ALUFlagsE));
+                    .Flags(ALUFlagsE),
+                    .I(I),
+                    .instr(instr),
+                    .compareOnly(compareOnly));
    
    // Memory Stage
    flopenr #(32) aluresreg (.clk(clk),
@@ -648,30 +695,96 @@ module extend (input  logic [23:0] Instr,
 endmodule // extend
 
 module alu (input  logic [31:0] a, b,
-            input  logic [1:0]  ALUControl,
+            input  logic [3:0]  ALUControl,
             output logic [31:0] Result,
-            output logic [3:0]  Flags);
+            output logic [3:0]  Flags,
+            input  logic        I,
+            input  logic [31:0] instr,
+            output logic        compareOnly);
 
    logic        neg, zero, carry, overflow;
    logic [31:0] condinvb;
    logic [32:0] sum;
+
+   //logic compareOnly;
+   logic [32:0] fakeReg;
    
-   assign condinvb = ALUControl[0] ? ~b : b;
-   assign sum = a + condinvb + ALUControl[0];
+  //  assign condinvb = ALUControl[0] ? ~b : b;
+  //  assign sum = a + condinvb + ALUControl[0];
+
+  //  always_comb
+  //    casex (ALUControl[1:0])
+  //      2'b0?: Result = sum;
+  //      2'b10: Result = a & b;
+  //      2'b11: Result = a | b;
+  //    endcase
+
+  //  assign neg      = Result[31];
+  //  assign zero     = (Result == 32'b0);
+  //  assign carry    = (ALUControl[1] == 1'b0) & sum[32];
+  //  assign overflow = (ALUControl[1] == 1'b0) & 
+  //                    ~(a[31] ^ b[31] ^ ALUControl[0]) & 
+  //                    (a[31] ^ sum[31]); 
+
+    assign c = (ALUControl[1] & ~ALUControl[3] & ~ALUControl[2]) ? Flags[1] : 0; // set Carry if required for ADC/SBC case
+    assign condinvb = (ALUControl[0] & ~ALUControl[3] & ~ALUControl[2]) ? ~b : b; // invert operand for sub case
+    assign sum = a + condinvb + ALUControl[0] + c; // sum for all add/sub cases
+  
 
    always_comb
-     casex (ALUControl[1:0])
-       2'b0?: Result = sum;
-       2'b10: Result = a & b;
-       2'b11: Result = a | b;
+   begin
+   compareOnly = 0;
+     casex (ALUControl[3:0])
+       4'b00??:  Result = sum; // ADD & SUB & ADC & SBC ??
+       //4'b0010:  Result = ; // ADC
+       //4'b0011:  Result = ; // SBC
+       4'b0100:  Result = a & b; // AND
+       4'b0101:  begin // MOV & ASR & LSL & LSR & ROR
+                      if(I) 
+                        Result = b;
+                      else begin
+                        casex(b[6:5])
+                          2'b00: Result = instr[3:0] << instr[11:7];
+                          2'b01: Result = instr[3:0] >> instr[11:7];
+                          2'b10: Result = instr[3:0] >>> instr[11:7];
+                          2'b11: Result = (instr[3:0] >> instr[11:7]) | (instr[3:0] << (6'b100000 - instr[11:7]));
+                          default: Result = 32'bx;
+                        endcase
+                      end
+                 end
+       4'b0110:  Result = a & ~b; // BIC
+       4'b0111:  begin            // CMN
+                      assign fakeReg = a + b; 
+                      compareOnly = 1; 
+                end
+       4'b1000:  begin            // CMP
+                      assign fakeReg = a - b; 
+                      compareOnly = 1; 
+                end 
+       4'b1001:  Result = a ^ b; // EOR ??
+       4'b1010:  Result = ~a; // MVN
+       4'b1011:  Result = a | b; // ORR
+       4'b1100:  begin // TEQ
+                      assign fakeReg = a ^ b;
+                      compareOnly = 1;
+                 end
+       4'b1101:  begin // TST
+                      assign fakeReg = a & b;
+                      compareOnly = 1;
+                 end
+       default: Result = 32'bx;
      endcase
+   end
 
-   assign neg      = Result[31];
-   assign zero     = (Result == 32'b0);
-   assign carry    = (ALUControl[1] == 1'b0) & sum[32];
-   assign overflow = (ALUControl[1] == 1'b0) & 
+   assign neg      = compareOnly ? fakeReg[31] : Result[31];
+   assign zero     = compareOnly ? (fakeReg == 32'b0) : (Result == 32'b0);
+   assign carry    = compareOnly ? (ALUControl[1] == 1'b0) & fakeReg[32] : (ALUControl[1] == 1'b0) & sum[32];
+   assign overflow = compareOnly ? (ALUControl[1] == 1'b0) & 
+                     ~(a[31] ^ b[31] ^ ALUControl[0]) & 
+                     (a[31] ^ fakeReg[31]) : (ALUControl[1] == 1'b0) & 
                      ~(a[31] ^ b[31] ^ ALUControl[0]) & 
                      (a[31] ^ sum[31]); 
+
    assign Flags = {neg, zero, carry, overflow};
 
 endmodule // alu
