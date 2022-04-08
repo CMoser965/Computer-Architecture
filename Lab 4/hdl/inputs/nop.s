@@ -1,5 +1,8 @@
 MOV R4, #42
 MOV R5, #27
+MOV R3, #5
+MOV R6, #5
+MOV R7, #5
 ADD R1, R4, R5
 NOP 
 NOP 
